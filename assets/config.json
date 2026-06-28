@@ -1,0 +1,39 @@
+{
+    "interval_seconds": 3,
+    "nsfw_threshold": 0.45,
+    "cooldown_seconds": 10,
+    "browsers": [
+        "chrome.exe",
+        "firefox.exe",
+        "msedge.exe",
+        "brave.exe",
+        "opera.exe"
+    ],
+    "whitelist_skip": [
+        "youtube", "youtu.be",
+        "coursera", "udemy", "edx", "edx.org", "khanacademy", "udacity",
+        "skillshare", "pluralsight", "codecademy", "freecodecamp",
+        "mit ocw", "stanford online",
+        "canvas", "blackboard", "moodle", "schoology", "google classroom", "classroom",
+        "stackoverflow", "github", "gitlab", "bitbucket", "codepen", "replit",
+        "leetcode", "hackerrank",
+        "linkedin", "linkedin learning",
+        "google scholar", "researchgate", "academia.edu", "pubmed", "jstor", "wikipedia",
+        "zoom", "teams", "microsoft teams", "meet", "google meet", "webex", "slack", "discord",
+        "colab", "google colab",
+        "medium.com", "dev.to", "geeksforgeeks", "w3schools", "tutorialspoint", "programiz",
+        "outlook", "gmail"
+    ],
+    "whitelist_lenient": [],
+    "blacklist_kill": [
+        "proxy", "vpn", "unblock", "unblocked", "bypass",
+        "ok.ru", "vk.ru", "mail.ru", "yandex.ru", "rutube.ru", "rambler.ru",
+        ".ru ", ".ru/",
+        "xnxx", "xhamster", "pornhub", "xvideos", "redtube", "youporn",
+        "tube8", "spankbang", "porntube", "eporner",
+        "netflix", "hulu", "disney+", "hbomax", "prime video",
+        "twitch.tv", "kick.com", "onlyfans", "fansly"
+    ],
+    "lock_until": "",
+    "lock_seal": ""
+}
