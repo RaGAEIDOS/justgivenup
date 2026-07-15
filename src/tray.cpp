@@ -83,11 +83,11 @@ void Tray::show_menu() {
         AppendMenuW(hMenu, MF_STRING | MF_GRAYED, 102, L"Exit");
     } else {
         if (_guardian->is_running())
-            AppendMenuW(hMenu, MF_STRING, 200, L"⏹ Stop");
+            AppendMenuW(hMenu, MF_STRING, 200, L"Stop");
         else
-            AppendMenuW(hMenu, MF_STRING, 201, L"▶ Start");
+            AppendMenuW(hMenu, MF_STRING, 201, L"Start");
         AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-        AppendMenuW(hMenu, MF_STRING, 202, L"✕ Exit");
+        AppendMenuW(hMenu, MF_STRING, 202, L"Exit");
     }
 
     POINT pt;

@@ -29,6 +29,8 @@ add_executable(JustGivenUp
   src/lock.cpp
   src/tray.cpp
   src/guardian.cpp
+  src/stats.cpp
+  src/dashboard.cpp
   src/resource.rc
 )
 

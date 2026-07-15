@@ -6,10 +6,11 @@
 #include "detector.h"
 #include "lock.h"
 #include "log.h"
+#include "stats.h"
 #include <chrono>
 #include <thread>
 
-Guardian::Guardian(Config* cfg, Filter* filter, BrowserKiller* killer,
+Guardian::Guardian(Config* cfg, Filter* filter, BrowserManager* killer,
                    Capture* capture, Detector* detector, Lock* lock)
     : _cfg(cfg), _filter(filter), _killer(killer), _capture(capture),
       _detector(detector), _lock(lock) {}
@@ -52,6 +53,25 @@ void Guardian::stop() {
     Log::instance().info("[GUARDIAN] Stopped");
 }
 
+bool Guardian::handle_nsfw_detected(const std::string& reason) {
+    Stats::instance().record_warning_shown();
+
+    // Show warning dialog: returns true if user chose to continue (relapse)
+    bool relapse = _killer->show_warning_dialog(reason, 30);
+
+    if (relapse) {
+        Stats::instance().record_relapse();
+        _status_msg = "User continued despite warning";
+        Log::instance().warn("[GUARDIAN] User chose to continue: " + reason);
+    } else {
+        Stats::instance().record_blocked();
+        _status_msg = "Tab closed: " + reason;
+        Log::instance().warn("[GUARDIAN] Blocked: " + reason);
+    }
+
+    return relapse;
+}
+
 void Guardian::loop() {
     Log::instance().info("[GUARDIAN] Monitor loop started");
     int interval = _cfg->get().interval_seconds;
@@ -59,7 +79,6 @@ void Guardian::loop() {
 
     while (_running) {
         try {
-            // Cooldown check
             auto now = std::chrono::steady_clock::now();
             double now_sec = std::chrono::duration<double>(now.time_since_epoch()).count();
             if (now_sec < _cooldown_until) {
@@ -69,22 +88,19 @@ void Guardian::loop() {
 
             _status_msg = "Monitoring";
 
-            // Check ALL visible window titles (not just foreground)
+            // Check ALL visible window titles
             FilterMode mode = _filter->check_all_windows();
 
-            // Blacklist kill: close browser immediately, no NSFW check needed
+            // BLACKLIST match: warn + close tab
             if (mode == FilterMode::KILL) {
-                Log::instance().warn("[GUARDIAN] Blacklist match — killing browser immediately");
-                int killed = _killer->kill_all();
-                if (killed > 0) {
-                    _status_msg = "Closed browser (blacklist)";
-                    _cooldown_until = now_sec + _cfg->get().cooldown_seconds;
-                }
+                Log::instance().warn("[GUARDIAN] Blacklist match -- warning user");
+                handle_nsfw_detected("Blacklisted website detected in browser window!");
+                _cooldown_until = now_sec + _cfg->get().cooldown_seconds;
                 std::this_thread::sleep_for(std::chrono::seconds(interval));
                 continue;
             }
 
-            // Whitelist skip: no detection at all
+            // WHITELIST skip: no detection at all
             if (mode == FilterMode::SKIP) {
                 std::this_thread::sleep_for(std::chrono::seconds(interval));
                 continue;
@@ -97,7 +113,7 @@ void Guardian::loop() {
                 continue;
             }
 
-            // Determine threshold (lenient = higher threshold, e.g. 0.75)
+            // Determine threshold (lenient = higher threshold)
             float use_threshold = threshold;
             if (mode == FilterMode::LENIENT)
                 use_threshold = 0.75f;
@@ -114,11 +130,8 @@ void Guardian::loop() {
             }
 
             if (found_nsfw) {
-                int killed = _killer->kill_all();
-                if (killed > 0) {
-                    _status_msg = "Closed browser (NSFW)";
-                    _cooldown_until = now_sec + _cfg->get().cooldown_seconds;
-                }
+                handle_nsfw_detected("NSFW content detected on screen!");
+                _cooldown_until = now_sec + _cfg->get().cooldown_seconds;
             }
 
             std::this_thread::sleep_for(std::chrono::seconds(interval));

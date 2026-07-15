@@ -6,14 +6,14 @@
 
 class Config;
 class Filter;
-class BrowserKiller;
+class BrowserManager;
 class Capture;
 class Detector;
 class Lock;
 
 class Guardian {
 public:
-    Guardian(Config* cfg, Filter* filter, BrowserKiller* killer,
+    Guardian(Config* cfg, Filter* filter, BrowserManager* killer,
              Capture* capture, Detector* detector, Lock* lock);
     ~Guardian();
     bool is_locked();
@@ -25,10 +25,11 @@ public:
 
 private:
     void loop();
+    bool handle_nsfw_detected(const std::string& reason);
 
     Config* _cfg;
     Filter* _filter;
-    BrowserKiller* _killer;
+    BrowserManager* _killer;
     Capture* _capture;
     Detector* _detector;
     Lock* _lock;

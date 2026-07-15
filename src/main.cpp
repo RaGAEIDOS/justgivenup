@@ -16,8 +16,8 @@
 #include "lock.h"
 #include "guardian.h"
 #include "tray.h"
-
-// ── Helpers ─────────────────────────────────────────────
+#include "stats.h"
+#include "dashboard.h"
 
 std::string exe_dir() {
     wchar_t path[MAX_PATH];
@@ -63,13 +63,14 @@ bool remove_auto_start() {
 
 void print_help(const std::string& name) {
     std::cout << "JustGivenUp! - Screen Guardian (C++)\n\n";
-    std::cout << "  " << name << "                        Run with system tray\n";
+    std::cout << "  " << name << "                        Run with system tray + dashboard\n";
     std::cout << "  " << name << " --install               Add to Windows startup\n";
     std::cout << "  " << name << " --remove                Remove from Windows startup\n";
     std::cout << "  " << name << " --lock--DAYS            Lock for N days (3 confirmations required)\n";
     std::cout << "  " << name << " --emergency-stop        Kill all JustGivenUp processes\n";
     std::cout << "  " << name << " --watchdog              Run as watchdog process\n";
     std::cout << "  " << name << " --help                  Show this help\n";
+    std::cout << "\nDashboard: http://127.0.0.1:8081 (customize in config.json)\n";
 }
 
 bool prompt_confirm(const std::string& action, int round) {
@@ -90,7 +91,7 @@ void emergency_stop() {
     if (lock.is_locked() && lock.is_valid()) {
         std::cout << "[BLOCKED] A time-lock is active until " << lock.until_str()
                   << ". --emergency-stop cannot remove the lock." << std::endl;
-        Log::instance().warn("[EMERGENCY STOP] Refused — lock active");
+        Log::instance().warn("[EMERGENCY STOP] Refused -- lock active");
         return;
     }
 
@@ -124,7 +125,6 @@ void emergency_stop() {
 int main(int argc, char* argv[]) {
     std::string exe = exe_dir() + "\\JustGivenUp.exe";
     std::string model_path = exe_dir() + "\\320n.onnx";
-    std::string config_path = ""; // Config auto-loads from %APPDATA%
 
     Log::instance().info("=== JustGivenUp! v2.0 (C++) ===");
 
@@ -132,13 +132,12 @@ int main(int argc, char* argv[]) {
     if (argc > 1) {
         std::string cmd = argv[1];
 
-        // --lock--DAYS
         if (cmd.rfind("--lock--", 0) == 0) {
             std::string days_str = cmd.substr(8);
             int days = 0;
             try { days = std::stoi(days_str); } catch (...) {}
             if (days < 1 || days > 3650) {
-                std::cout << "[FAIL] Invalid days. Use --lock--N where N is 1–3650." << std::endl;
+                std::cout << "[FAIL] Invalid days. Use --lock--N where N is 1-3650." << std::endl;
                 return 1;
             }
 
@@ -173,7 +172,6 @@ int main(int argc, char* argv[]) {
             return 0;
         }
         if (cmd == "--watchdog") {
-            // Not available in main exe — run JustGivenUp_watchdog.exe instead
             std::cout << "[WATCHDOG] Use JustGivenUp_watchdog.exe separately" << std::endl;
             return 0;
         }
@@ -188,27 +186,35 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // ── Normal mode (tray) ───────────────────────────────
+    // ── Normal mode (tray + dashboard) ──────────────────
     ShowWindow(GetConsoleWindow(), SW_HIDE);
+
     // Init modules
     Config config;
     Lock lock;
     Filter filter;
-    BrowserKiller killer;
+    BrowserManager killer;
     Capture capture;
     Detector detector(model_path);
 
     if (!detector.loaded()) {
-        Log::instance().error("[MAIN] Detector failed to load — aborting");
+        Log::instance().error("[MAIN] Detector failed to load -- aborting");
         std::cerr << "[FATAL] Cannot load NSFW model. Check " << model_path << std::endl;
         return 1;
     }
+
+    // Load stats
+    Stats::instance().load();
 
     // Configure filter
     filter.set_whitelist_skip(config.get().whitelist_skip);
     filter.set_whitelist_lenient(config.get().whitelist_lenient);
     filter.set_blacklist_kill(config.get().blacklist_kill);
     killer.set_targets(config.get().browsers);
+
+    // Start dashboard
+    Dashboard dashboard(config.get().dashboard_port);
+    dashboard.start();
 
     // Create guardian
     Guardian guardian(&config, &filter, &killer, &capture, &detector, &lock);
@@ -220,18 +226,21 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Auto-start guardian if locked or configured
-    if (guardian.is_locked() || true) { // always start for simplicity
+    // Auto-start guardian
+    if (guardian.is_locked() || true) {
         guardian.start();
         tray.update_status(guardian.status());
     }
 
+    Log::instance().info("[MAIN] Tray running. Dashboard at http://127.0.0.1:" +
+                         std::to_string(config.get().dashboard_port));
+
     // Run message loop
-    Log::instance().info("[MAIN] Tray running");
     tray.run();
 
     // Cleanup
     guardian.stop();
+    dashboard.stop();
     Log::instance().info("[MAIN] Exited");
     return 0;
 }

@@ -8,10 +8,11 @@ struct AppConfig {
     int interval_seconds = 3;
     float nsfw_threshold = 0.45f;
     int cooldown_seconds = 10;
-    std::vector<std::string> browsers = {"chrome.exe", "firefox.exe", "msedge.exe", "brave.exe", "opera.exe"};
+    int dashboard_port = 8081;
+    std::vector<std::string> browsers;
     std::vector<std::string> whitelist_skip;
-    std::vector<std::string> whitelist_lenient;  // youtube only
-    std::vector<std::string> blacklist_kill;     // proxy/porn/streaming → instant kill
+    std::vector<std::string> whitelist_lenient;
+    std::vector<std::string> blacklist_kill;
     std::string lock_until;
     std::string lock_seal;
 };

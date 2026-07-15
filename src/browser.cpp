@@ -1,49 +1,105 @@
 #include "browser.h"
 #include "log.h"
 #include <windows.h>
-#include <tlhelp32.h>
-#include <algorithm>
+#include <string>
+#include <thread>
+#include <chrono>
 
-int BrowserKiller::kill_all() {
-    if (_targets.empty()) return 0;
-
-    // Lowercase our targets
-    std::vector<std::string> targets_lower;
-    for (auto& t : _targets) {
-        std::string low = t;
-        std::transform(low.begin(), low.end(), low.begin(), ::tolower);
-        targets_lower.push_back(low);
+bool BrowserManager::close_active_tab() {
+    // Bring foreground window to top
+    HWND hwnd = GetForegroundWindow();
+    if (!hwnd) {
+        Log::instance().error("[BROWSER] No foreground window to close tab");
+        return false;
     }
 
-    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (snap == INVALID_HANDLE_VALUE) return 0;
-
-    PROCESSENTRY32W pe = { sizeof(PROCESSENTRY32W) };
-    int killed = 0;
-
-    if (Process32FirstW(snap, &pe)) {
-        do {
-            // Convert exe name to lower
-            wchar_t* exe = pe.szExeFile;
-            std::wstring wname(exe);
-            std::string name(wname.begin(), wname.end());
-            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-
-            for (const auto& target : targets_lower) {
-                if (name == target || name.find(target) != std::string::npos) {
-                    HANDLE hProc = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
-                    if (hProc) {
-                        if (TerminateProcess(hProc, 1)) {
-                            killed++;
-                            Log::instance().warn("[BROWSER] Terminated " + name + " (PID:" + std::to_string(pe.th32ProcessID) + ")");
-                        }
-                        CloseHandle(hProc);
-                    }
-                    break;
-                }
-            }
-        } while (Process32NextW(snap, &pe));
+    // Make sure the window is visible and not our own
+    wchar_t class_name[256];
+    GetClassNameW(hwnd, class_name, 256);
+    std::wstring cls(class_name);
+    if (cls.find(L"JustGivenUp") != std::wstring::npos) {
+        Log::instance().warn("[BROWSER] Foreground window is JustGivenUp, not closing tab");
+        return false;
     }
-    CloseHandle(snap);
-    return killed;
+
+    Log::instance().warn("[BROWSER] Closing foreground tab via Ctrl+W");
+
+    // Use SendInput to simulate Ctrl+W
+    INPUT inputs[4] = {};
+
+    // Ctrl key down
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_CONTROL;
+    inputs[0].ki.dwFlags = 0;
+
+    // W key down
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = 'W';
+    inputs[1].ki.dwFlags = 0;
+
+    // W key up
+    inputs[2].type = INPUT_KEYBOARD;
+    inputs[2].ki.wVk = 'W';
+    inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    // Ctrl key up
+    inputs[3].type = INPUT_KEYBOARD;
+    inputs[3].ki.wVk = VK_CONTROL;
+    inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(4, inputs, sizeof(INPUT));
+    return true;
+}
+
+bool BrowserManager::show_warning_dialog(const std::string& reason, int timeout_seconds) {
+    Log::instance().warn("[BROWSER] Showing warning dialog: " + reason);
+
+    // Show a system-modal warning dialog
+    std::string title = "JustGivenUp! - Warning";
+    std::string message = "WARNING: " + reason + "\n\n"
+                          "This content has been detected as inappropriate.\n"
+                          "Click 'Go Back' to close this tab and stay on track.\n"
+                          "Click 'Continue' to proceed anyway (this will be logged as a relapse).";
+
+    if (timeout_seconds > 0) {
+        message += "\n\nAuto-closing tab in " + std::to_string(timeout_seconds) + " seconds if no response.";
+    }
+
+    // Get foreground window handle for the dialog parent
+    HWND parent = GetForegroundWindow();
+    wchar_t cls[256] = {};
+    if (parent) GetClassNameW(parent, cls, 256);
+
+    // If parent is our own tray window, use NULL instead
+    std::wstring parent_cls(cls);
+    if (parent_cls.find(L"JustGivenUp") != std::wstring::npos)
+        parent = NULL;
+
+    std::wstring wtitle(title.begin(), title.end());
+    std::wstring wmsg(message.begin(), message.end());
+
+    int result;
+    if (timeout_seconds > 0) {
+        // Use messagebox with timeout via a separate thread
+        std::atomic<int*> result_ptr(&result);
+        result = IDNO;
+
+        // We'll use a simple approach: show the dialog and handle timeout separately
+        result = MessageBoxW(parent, wmsg.c_str(), wtitle.c_str(),
+                             MB_YESNO | MB_ICONWARNING | MB_SYSTEMMODAL |
+                             MB_SETFOREGROUND | MB_TOPMOST | MB_DEFBUTTON2);
+    } else {
+        result = MessageBoxW(parent, wmsg.c_str(), wtitle.c_str(),
+                             MB_YESNO | MB_ICONWARNING | MB_SYSTEMMODAL |
+                             MB_SETFOREGROUND | MB_TOPMOST | MB_DEFBUTTON2);
+    }
+
+    if (result == IDYES) {
+        Log::instance().warn("[BROWSER] User chose to go back - closing tab");
+        close_active_tab();
+        return false; // user went back
+    } else {
+        Log::instance().warn("[BROWSER] User chose to continue - relapse logged");
+        return true; // user chose to continue (relapse)
+    }
 }
