@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/RaGAEIDOS/justgivenup/releases/latest"><img src="https://img.shields.io/github/v/release/RaGAEIDOS/justgivenup?style=for-the-badge&logo=windows&label=Download%20Latest&color=blue" alt="Download Latest"></a>
-  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/tag/v2.0"><img src="https://img.shields.io/badge/Release-v2.0-blueviolet?style=for-the-badge&logo=github" alt="Release v2.0"></a>
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/tag/v2.1"><img src="https://img.shields.io/badge/Release-v2.1-blueviolet?style=for-the-badge&logo=github" alt="Release v2.1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT License"></a>
   <a href="https://github.com/RaGAEIDOS/justgivenup"><img src="https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?style=for-the-badge&logo=windows" alt="Platform"></a>
 </p>
@@ -36,13 +36,13 @@ This is not surveillance. This is **self-respect in code form**. Set your goal, 
 ## Quick Download
 
 <p align="center">
-  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.0/JustGivenUp-v2.0-win64.zip">
-    <img src="https://img.shields.io/badge/Download-JustGivenUp!%20v2.0%20(39%20MB)-brightgreen?style=for-the-badge&logo=windows&logoColor=white" alt="Download ZIP">
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.1/JustGivenUp-v2.1-win64.zip">
+    <img src="https://img.shields.io/badge/Download-JustGivenUp!%20v2.1%20(22%20MB)-brightgreen?style=for-the-badge&logo=windows&logoColor=white" alt="Download ZIP">
   </a>
 </p>
 
 <p align="center">
-  <code>JustGivenUp-v2.0-win64.zip</code> -- Portable, no install required. Unzip and run.
+  <code>JustGivenUp-v2.1-win64.zip</code> -- Portable, no install required. Unzip and run.
 </p>
 
 ### Or install via PowerShell (Admin)
@@ -176,8 +176,8 @@ Config is stored at `%APPDATA%\JustGivenUp\config.json`:
 
 ```bash
 mkdir build && cd build
-cmake .. -G "MinGW Makefiles"
-mingw32-make -j$(nproc)
+cmake .. -G "Ninja"
+ninja
 ```
 
 The `build/` directory will contain both executables and all required DLLs.
