@@ -75,6 +75,7 @@ void Config::load_defaults() {
 
         // YouTube & Video Learning
         "youtube","youtu.be","youtube.com","youtube-nocookie.com",
+        "يوتيوب","يوتيب",
         "youtubeeducation","teachertube","schooltube","khanacademy",
         "ted.com","tedx","ted ed",
 
