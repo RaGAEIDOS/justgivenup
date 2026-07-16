@@ -20,11 +20,12 @@
 #include "dashboard.h"
 
 std::string exe_dir() {
-    wchar_t path[MAX_PATH];
-    GetModuleFileNameW(NULL, path, MAX_PATH);
+    wchar_t path[MAX_PATH] = {};
+    if (GetModuleFileNameW(NULL, path, MAX_PATH) == 0)
+        return ".";
     wchar_t* last = wcsrchr(path, L'\\');
     if (last) *last = L'\0';
-    char pathA[MAX_PATH];
+    char pathA[MAX_PATH] = {};
     WideCharToMultiByte(CP_UTF8, 0, path, -1, pathA, MAX_PATH, NULL, NULL);
     return pathA;
 }
@@ -176,9 +177,12 @@ int main(int argc, char* argv[]) {
             return 0;
         }
         if (cmd == "--help") {
-            std::string name = argv[0];
-            size_t pos = name.find_last_of("\\/");
-            if (pos != std::string::npos) name = name.substr(pos + 1);
+            std::string name = "JustGivenUp.exe";
+            if (argv[0]) {
+                name = argv[0];
+                size_t pos = name.find_last_of("\\/");
+                if (pos != std::string::npos) name = name.substr(pos + 1);
+            }
             print_help(name);
             return 0;
         }

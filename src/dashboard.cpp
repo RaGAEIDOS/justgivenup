@@ -22,10 +22,6 @@ void Dashboard::start() {
 
 void Dashboard::stop() {
     _running = false;
-    if (_server_socket) {
-        closesocket((SOCKET)_server_socket);
-        _server_socket = nullptr;
-    }
     if (_thread) {
         if (_thread->joinable()) _thread->join();
         delete _thread;

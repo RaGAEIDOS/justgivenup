@@ -45,6 +45,9 @@ void Guardian::start() {
 void Guardian::stop() {
     _running = false;
     if (_thread) {
+        // Dismiss any pending warning dialog so the thread can exit
+        HWND hDlg = FindWindowW(NULL, L"JustGivenUp! - Warning");
+        if (hDlg) PostMessageW(hDlg, WM_COMMAND, IDNO, 0);
         if (_thread->joinable()) _thread->join();
         delete _thread;
         _thread = nullptr;

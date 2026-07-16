@@ -6,6 +6,10 @@
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "comctl32.lib")
 
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 Tray::Tray(Guardian* g) : _guardian(g) {
     _hinst = GetModuleHandleW(NULL);
     _taskbar_msg = RegisterWindowMessageW(L"TaskbarCreated");
@@ -16,6 +20,9 @@ Tray::~Tray() {
 }
 
 bool Tray::create() {
+    INITCOMMONCONTROLSEX icc = { sizeof(INITCOMMONCONTROLSEX), ICC_BAR_CLASSES };
+    InitCommonControlsEx(&icc);
+
     WNDCLASSW wc = {};
     wc.lpfnWndProc = wnd_proc;
     wc.hInstance = _hinst;
@@ -73,6 +80,9 @@ void Tray::show_menu() {
     HMENU hMenu = CreatePopupMenu();
     bool locked = _guardian->is_locked();
 
+    AppendMenuW(hMenu, MF_STRING, 300, L"Visit Dashboard");
+    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+
     if (locked) {
         std::string lock_text = "Locked until " + _guardian->lock_until_str();
         std::wstring wlock(lock_text.begin(), lock_text.end());
@@ -124,6 +134,7 @@ LRESULT CALLBACK Tray::wnd_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             case 200: self->_guardian->stop(); self->set_icon(false); break;
             case 201: self->_guardian->start(); self->set_icon(true); break;
             case 202: self->_guardian->stop(); PostQuitMessage(0); break;
+            case 300: ShellExecuteW(NULL, L"open", L"http://127.0.0.1:8081", NULL, NULL, SW_SHOWNORMAL); break;
         }
         return 0;
     }

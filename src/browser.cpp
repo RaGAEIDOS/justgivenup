@@ -54,7 +54,6 @@ bool BrowserManager::close_active_tab() {
 bool BrowserManager::show_warning_dialog(const std::string& reason, int timeout_seconds) {
     Log::instance().warn("[BROWSER] Showing warning dialog: " + reason);
 
-    // Show a system-modal warning dialog
     std::string title = "JustGivenUp! - Warning";
     std::string message = "WARNING: " + reason + "\n\n"
                           "This content has been detected as inappropriate.\n"
@@ -65,12 +64,9 @@ bool BrowserManager::show_warning_dialog(const std::string& reason, int timeout_
         message += "\n\nAuto-closing tab in " + std::to_string(timeout_seconds) + " seconds if no response.";
     }
 
-    // Get foreground window handle for the dialog parent
     HWND parent = GetForegroundWindow();
     wchar_t cls[256] = {};
     if (parent) GetClassNameW(parent, cls, 256);
-
-    // If parent is our own tray window, use NULL instead
     std::wstring parent_cls(cls);
     if (parent_cls.find(L"JustGivenUp") != std::wstring::npos)
         parent = NULL;
@@ -78,28 +74,15 @@ bool BrowserManager::show_warning_dialog(const std::string& reason, int timeout_
     std::wstring wtitle(title.begin(), title.end());
     std::wstring wmsg(message.begin(), message.end());
 
-    int result;
-    if (timeout_seconds > 0) {
-        // Use messagebox with timeout via a separate thread
-        std::atomic<int*> result_ptr(&result);
-        result = IDNO;
-
-        // We'll use a simple approach: show the dialog and handle timeout separately
-        result = MessageBoxW(parent, wmsg.c_str(), wtitle.c_str(),
+    int result = MessageBoxW(parent, wmsg.c_str(), wtitle.c_str(),
                              MB_YESNO | MB_ICONWARNING | MB_SYSTEMMODAL |
                              MB_SETFOREGROUND | MB_TOPMOST | MB_DEFBUTTON2);
-    } else {
-        result = MessageBoxW(parent, wmsg.c_str(), wtitle.c_str(),
-                             MB_YESNO | MB_ICONWARNING | MB_SYSTEMMODAL |
-                             MB_SETFOREGROUND | MB_TOPMOST | MB_DEFBUTTON2);
-    }
 
     if (result == IDYES) {
         Log::instance().warn("[BROWSER] User chose to go back - closing tab");
         close_active_tab();
-        return false; // user went back
-    } else {
-        Log::instance().warn("[BROWSER] User chose to continue - relapse logged");
-        return true; // user chose to continue (relapse)
+        return false;
     }
+    Log::instance().warn("[BROWSER] User chose to continue - relapse logged");
+    return true;
 }
