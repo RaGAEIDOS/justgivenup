@@ -68,7 +68,11 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 | **Warning Dialog** | System-modal YES/NO dialog on blacklist/NSFW hit — "Go Back" closes tab, "Continue" logs relapse. After 3 refusals, ALL browsers are killed |
 | **Smart Filtering** | Massive whitelist (200+ edu/dev platforms) skips detection; blacklist (proxy/VPN/porn/streaming/.ru) warns instantly |
 | **All-Window Scan** | `EnumWindows` checks every visible window title, not just foreground |
-| **Web Dashboard** | Local HTTP server on port 8081 with live stats (clean days, blocked count, streak, lock status) |
+| **Web Dashboard** | Local HTTP server on port 8081 with live stats, profile, ranks, settings |
+| **Setup Wizard** | First-run guided setup: language, name, goal, duration, auto-start, profile picture |
+| **Rank System** | 13 milestones (7-2550 days clean) with emoji badges, progress tracking, Arabic/English names |
+| **Profile Page** | Name, reason, profile picture — track your identity and motivation |
+| **Settings Page** | Language toggle (English/العربية), auto-start configuration |
 | **Stats Tracking** | Blocked count, relapses, streaks, warning history saved to `%APPDATA%\JustGivenUp\stats.json` |
 | **Cryptographic Time-Lock** | SHA-256 sealed via BCrypt in registry; tampering adds 90 days |
 | **Exit Prevention** | Stop/Exit grayed when locked, Alt+F4 blocked, `--emergency-stop` refused |
@@ -94,13 +98,25 @@ JustGivenUp.exe --help                  Show help
 
 ## Quick Start
 
-1. **Download** the [latest release](https://github.com/RaGAEIDOS/justgivenup/releases/latest)
-2. Run `JustGivenUp.exe --lock--30` to lock for 30 days (type `YES` 3 times)
-3. Reboot -- the program starts automatically via Registry Run key
-4. Tray icon shows countdown; Stop/Exit are grayed out while locked
+1. **Download** the [latest installer](https://github.com/RaGAEIDOS/justgivenup/releases/latest)
+2. Run the installer — it sets up the Windows service and places `JustGivenUp.exe` on your desktop
+3. Launch `JustGivenUp.exe` — the **Setup Wizard** opens in your browser at `http://127.0.0.1:8081`
+4. Follow the 6-step wizard: choose language → enter your name → select your goal → pick lock duration → enable auto-start → add a profile picture
+5. Click **Finish & Start** — the program locks itself for your chosen duration
+6. Reboot if desired — the program starts automatically and the service keeps it running
 
 ---
 
+## Dashboard Tabs
+
+| Tab | Description |
+|-----|-------------|
+| **Dashboard** | Live stats (clean days, blocked, relapses, streak, lock status, activity history) |
+| **Profile** | Your name, reason for using, profile picture |
+| **Ranks** | 13 rank milestones (Bronze → Silver → Gold → Platinum → Diamond → Master → Grandmaster → Legend → Mythic → Immortal → Transcendent → Ascended → Enlightened) with progress bar |
+| **Settings** | Language toggle (English/العربية), auto-start with Windows |
+
+---
 ## How It Works
 
 ```
@@ -233,7 +249,11 @@ Distributed under the MIT License. See `LICENSE` for more information.
 | **كشف NSFW بالذكاء الاصطناعي** | تصوير الشاشة كل 3 ثوانٍ عبر GDI `BitBlt`، تحليل بنموذج NudeNet `320n.onnx` عبر ONNX Runtime |
 | **إغلاق التبويبات بدلاً من قتل المتصفح** | يحاكي الضغط على Ctrl+W لإغلاق التبويب المخالف مع نافذة تحذير. بعد 3 رفضات متتالية، تُقتل جميع المتصفحات |
 | **فلتر ذكي** | قائمة بيضاء ضخمة (200+ موقع تعليمي) تتجاوز الفحص؛ قائمة سوداء (بروكسي، VPN، إباحي، رقص، .ru) تغلق التبويب فوراً |
-| **لوحة تحكم ويب** | dashboard محلي على `http://127.0.0.1:8081` يعرض إحصائيات حية (أيام نظيفة، حالات انتكاس، السلسلة) |
+| **لوحة تحكم ويب** | dashboard محلي على `http://127.0.0.1:8081` يعرض إحصائيات حية، الملف الشخصي، الرتب، الإعدادات |
+| **معالج الإعداد الأولي** | 6 خطوات: اختيار اللغة، الاسم، الهدف، المدة، التشغيل مع ويندوز، الصورة الشخصية |
+| **نظام الرتب** | 13 رتبة (7-2550 يوم نظيف) مع شارات إيموجي، تتبع التقدم، أسماء عربية/إنجليزية |
+| **صفحة الملف الشخصي** | الاسم، سبب الاستخدام، صورة شخصية |
+| **الإعدادات** | تبديل اللغة (عربي/إنجليزي)، تفعيل التشغيل مع ويندوز |
 | **القفل الزمني المشفر** | SHA-256 عبر BCrypt في الريجستري؛ العبث يضيف 90 يوماً إضافية |
 | **منع الخروج** | زر الإيقاف/الخروج معطل عند القفل، Alt+F4 محظور، `--emergency-stop` مرفوض |
 | **تشغيل في الخلفية** | بعد بدء التشغيل، يتم فصل الكونسول وتشغيل البرنامج في الخلفية بدون نافذة |
@@ -252,21 +272,19 @@ JustGivenUp.exe --help                       عرض المساعدة
 
 ### بدء سريع
 
-1. **حمّل** [آخر إصدار](https://github.com/RaGAEIDOS/justgivenup/releases/latest)
-2. شغّل `JustGivenUp.exe --lock-30` لقفل 30 يوماً (اكتب `YES` ثلاث مرات)
-3. أعد التشغيل — البرنامج يبدأ تلقائياً
-4. أيقونة في علبة النظام تظهر العد التنازلي؛ زر الإيقاف/الخروج معطل أثناء القفل
-5. افتح `http://127.0.0.1:8081` لمشاهدة الإحصائيات الحية
+1. **حمّل** [المثبّت الرسمي](https://github.com/RaGAEIDOS/justgivenup/releases/latest)
+2. شغّل المثبّت — يثبّت الخدمة وينسخ الملفات على سطح المكتب
+3. شغّل `JustGivenUp.exe` — **معالج الإعداد** يفتح في المتصفح على `http://127.0.0.1:8081`
+4. اتبع الخطوات الـ 6: اختر اللغة → أدخل اسمك → حدد هدفك → اختر المدة → فعّل التشغيل مع ويندوز → أضف صورة
+5. اضغط **إنهاء والبدء** — البرنامج يقفل نفسه للمدة التي اخترتها
 
 ### لوحة التحكم (Dashboard)
 
 عند تشغيل البرنامج، افتح المتصفح على `http://127.0.0.1:8081` لترى:
-- عدد الأيام النظيفة (منذ آخر انتكاسة)
-- عدد المرات التي تم فيها حظر محتوى
-- عدد حالات الانتكاس (عندما ضغطت "متابعة" رغم التحذير)
-- سلسلة الانتكاسات الأطول
-- سلسلة النظافة الأطول (أطول فترة بدون انتكاسة)
-- حالة القفل (مقفل / مفتوح)
+- **الصفحة الرئيسية**: إحصائيات حية (أيام نظيفة، محظورات، انتكاسات، السلسلة)
+- **الملف الشخصي**: اسمك، سبب الاستخدام، صورتك
+- **الرتب**: 13 رتبة (برونز → فضة → ذهب → بلاتين → ماس → خبير → أستاذ كبير → أسطورة → أسطوري → خالد → متعالٍ → صاعد → مستنير)
+- **الإعدادات**: تبديل اللغة (عربي/إنجليزي)، تشغيل مع ويندوز
 
 ### كيف يعمل
 
