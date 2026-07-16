@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     std::string exe = exe_dir() + "\\JustGivenUp.exe";
     std::string model_path = exe_dir() + "\\320n.onnx";
 
-    Log::instance().info("=== JustGivenUp! v2.1 (C++) ===");
+    Log::instance().info("=== JustGivenUp! v2.2 (C++) ===");
 
     if (argc > 1) {
         std::string cmd = argv[1];
