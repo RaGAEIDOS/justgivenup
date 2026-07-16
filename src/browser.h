@@ -14,6 +14,9 @@ public:
     // Returns: false = user went back / tab was closed, true = user chose to continue
     bool show_warning_dialog(const std::string& reason, int timeout_seconds = 0);
 
+    // Kill all target browser processes
+    void kill_all_browsers();
+
 private:
     std::vector<std::string> _targets;
 };

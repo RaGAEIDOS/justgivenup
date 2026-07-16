@@ -37,5 +37,6 @@ private:
     std::atomic<bool> _running{false};
     std::thread* _thread{nullptr};
     double _cooldown_until{0};
+    int _refusal_count{0};
     std::string _status_msg = "Stopped";
 };

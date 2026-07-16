@@ -1,6 +1,7 @@
 #include "browser.h"
 #include "log.h"
 #include <windows.h>
+#include <tlhelp32.h>
 #include <string>
 #include <thread>
 #include <chrono>
@@ -85,4 +86,33 @@ bool BrowserManager::show_warning_dialog(const std::string& reason, int timeout_
     }
     Log::instance().warn("[BROWSER] User chose to continue - relapse logged");
     return true;
+}
+
+void BrowserManager::kill_all_browsers() {
+    Log::instance().warn("[BROWSER] Killing all browser processes...");
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snap == INVALID_HANDLE_VALUE) return;
+    PROCESSENTRY32W pe = { sizeof(PROCESSENTRY32W) };
+    if (Process32FirstW(snap, &pe)) {
+        do {
+            std::wstring exe(pe.szExeFile);
+            for (auto& target : _targets) {
+                std::wstring wtarget(target.begin(), target.end());
+                // Case-insensitive compare
+                std::wstring uexe = exe, utarget = wtarget;
+                for (auto& c : uexe) c = towlower(c);
+                for (auto& c : utarget) c = towlower(c);
+                if (uexe == utarget) {
+                    HANDLE hProc = OpenProcess(PROCESS_TERMINATE, FALSE, pe.th32ProcessID);
+                    if (hProc) {
+                        TerminateProcess(hProc, 1);
+                        CloseHandle(hProc);
+                        Log::instance().warn("[BROWSER] Killed: " + target);
+                    }
+                    break;
+                }
+            }
+        } while (Process32NextW(snap, &pe));
+    }
+    CloseHandle(snap);
 }

@@ -63,10 +63,19 @@ bool Guardian::handle_nsfw_detected(const std::string& reason) {
     bool relapse = _killer->show_warning_dialog(reason, 30);
 
     if (relapse) {
+        _refusal_count++;
         Stats::instance().record_relapse();
         _status_msg = "User continued despite warning";
         Log::instance().warn("[GUARDIAN] User chose to continue: " + reason);
+
+        if (_refusal_count >= 3) {
+            Log::instance().warn("[GUARDIAN] 3 consecutive refusals -- closing all browsers");
+            _status_msg = "All browsers closed (3 refusals)";
+            _killer->kill_all_browsers();
+            _refusal_count = 0;
+        }
     } else {
+        _refusal_count = 0;
         Stats::instance().record_blocked();
         _status_msg = "Tab closed: " + reason;
         Log::instance().warn("[GUARDIAN] Blocked: " + reason);

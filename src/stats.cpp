@@ -1,6 +1,6 @@
 #include "stats.h"
 #include "log.h"
-#include <fstream>
+#include <cstdio>
 #include <ctime>
 #include <chrono>
 #include <shlobj.h>
@@ -27,16 +27,30 @@ Stats::Stats() {
 }
 
 void Stats::load() {
-    std::ifstream ifs(_path);
-    if (ifs.good()) {
-        try { json j; ifs >> j; from_json(j); }
-        catch (...) { Log::instance().error("[STATS] Failed to parse stats.json"); }
+    FILE* f = fopen(_path.c_str(), "r");
+    if (f) {
+        try {
+            fseek(f, 0, SEEK_END);
+            long sz = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            std::string buf((size_t)sz, '\0');
+            fread(buf.data(), 1, sz, f);
+            fclose(f);
+            json j = json::parse(buf);
+            from_json(j);
+        } catch (...) {
+            Log::instance().error("[STATS] Failed to parse stats.json");
+        }
     }
 }
 
 void Stats::save() {
-    std::ofstream ofs(_path);
-    if (ofs.good()) ofs << to_json().dump(2);
+    FILE* f = fopen(_path.c_str(), "w");
+    if (f) {
+        std::string data = to_json().dump(2);
+        fwrite(data.data(), 1, data.size(), f);
+        fclose(f);
+    }
 }
 
 json Stats::to_json() const {

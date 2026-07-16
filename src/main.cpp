@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
+#include <memory>
 #include <windows.h>
 #include <tlhelp32.h>
 #include <shlobj.h>
 #include <shlwapi.h>
-#pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "shlwapi.lib")
 
 #include "log.h"
 #include "config.h"
@@ -29,8 +28,6 @@ std::string exe_dir() {
     WideCharToMultiByte(CP_UTF8, 0, path, -1, pathA, MAX_PATH, NULL, NULL);
     return pathA;
 }
-
-// ── Auto-start (Registry Run key) ──────────────────────
 
 bool install_auto_start() {
     wchar_t exe_path[MAX_PATH];
@@ -59,8 +56,6 @@ bool remove_auto_start() {
     }
     return false;
 }
-
-// ── CLI ─────────────────────────────────────────────────
 
 void print_help(const std::string& name) {
     std::cout << "JustGivenUp! - Screen Guardian (C++)\n\n";
@@ -121,15 +116,12 @@ void emergency_stop() {
     std::cout << "[EMERGENCY STOP] All JustGivenUp processes killed." << std::endl;
 }
 
-// ── Main ────────────────────────────────────────────────
-
 int main(int argc, char* argv[]) {
     std::string exe = exe_dir() + "\\JustGivenUp.exe";
     std::string model_path = exe_dir() + "\\320n.onnx";
 
     Log::instance().info("=== JustGivenUp! v2.1 (C++) ===");
 
-    // Parse CLI
     if (argc > 1) {
         std::string cmd = argv[1];
 
@@ -190,10 +182,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // ── Normal mode (tray + dashboard) ──────────────────
     ShowWindow(GetConsoleWindow(), SW_HIDE);
 
-    // Init modules
     Config config;
     Lock lock;
     Filter filter;
@@ -207,30 +197,24 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Load stats
     Stats::instance().load();
 
-    // Configure filter
     filter.set_whitelist_skip(config.get().whitelist_skip);
     filter.set_whitelist_lenient(config.get().whitelist_lenient);
     filter.set_blacklist_kill(config.get().blacklist_kill);
     killer.set_targets(config.get().browsers);
 
-    // Start dashboard
     Dashboard dashboard(config.get().dashboard_port);
     dashboard.start();
 
-    // Create guardian
     Guardian guardian(&config, &filter, &killer, &capture, &detector, &lock);
 
-    // Create tray
     Tray tray(&guardian);
     if (!tray.create()) {
         Log::instance().error("[MAIN] Tray creation failed");
         return 1;
     }
 
-    // Auto-start guardian
     if (guardian.is_locked() || true) {
         guardian.start();
         tray.update_status(guardian.status());
@@ -239,10 +223,8 @@ int main(int argc, char* argv[]) {
     Log::instance().info("[MAIN] Tray running. Dashboard at http://127.0.0.1:" +
                          std::to_string(config.get().dashboard_port));
 
-    // Run message loop
     tray.run();
 
-    // Cleanup
     guardian.stop();
     dashboard.stop();
     Log::instance().info("[MAIN] Exited");

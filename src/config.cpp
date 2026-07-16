@@ -1,10 +1,9 @@
 #include "config.h"
 #include "log.h"
-#include <fstream>
+#include <cstdio>
+#include <windows.h>
 #include <shlobj.h>
 #include <shlwapi.h>
-#pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "shlwapi.lib")
 
 Config::Config() {
     wchar_t appdata[MAX_PATH];
@@ -17,10 +16,22 @@ Config::Config() {
         WideCharToMultiByte(CP_UTF8, 0, appdata, -1, pathA, MAX_PATH, NULL, NULL);
         _path = pathA;
 
-        std::ifstream ifs(_path);
-        if (ifs.good()) {
-            try { json j; ifs >> j; _cfg = from_json(j); Log::instance().info("Config loaded: " + _path); return; }
-            catch (...) { Log::instance().error("Config parse failed, using defaults"); }
+        FILE* f = fopen(_path.c_str(), "r");
+        if (f) {
+            fseek(f, 0, SEEK_END);
+            long sz = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            std::string buf((size_t)sz, '\0');
+            fread(buf.data(), 1, sz, f);
+            fclose(f);
+
+            try {
+                json j = json::parse(buf);
+                _cfg = from_json(j);
+                return;
+            } catch (...) {
+                Log::instance().error("Config parse failed, using defaults");
+            }
         }
     }
     load_defaults();
@@ -218,9 +229,11 @@ json Config::to_json(const AppConfig& c) {
 }
 
 void Config::save() {
-    std::ofstream ofs(_path);
-    if (ofs.good()) {
-        ofs << to_json(_cfg).dump(4);
-        Log::instance().info("Config saved");
+    FILE* f = fopen(_path.c_str(), "w");
+    if (f) {
+        std::string data = to_json(_cfg).dump(4);
+        fwrite(data.data(), 1, data.size(), f);
+        fflush(f);
+        fclose(f);
     }
 }
