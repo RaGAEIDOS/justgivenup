@@ -36,13 +36,19 @@ This is not surveillance. This is **self-respect in code form**. Set your goal, 
 ## Quick Download
 
 <p align="center">
-  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.2/JustGivenUp-v2.2-win64.zip">
-    <img src="https://img.shields.io/badge/Download-JustGivenUp!%20v2.2%20(22%20MB)-brightgreen?style=for-the-badge&logo=windows&logoColor=white" alt="Download ZIP">
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.2/JustGivenUp-Setup-2.2-win64.exe">
+    <img src="https://img.shields.io/badge/Download-JustGivenUp!%20v2.2%20(41%20MB)-brightgreen?style=for-the-badge&logo=windows&logoColor=white" alt="Download Installer">
   </a>
 </p>
 
 <p align="center">
-  <code>JustGivenUp-v2.2-win64.zip</code> -- Portable, no install required. Unzip and run.
+  <code>JustGivenUp-Setup-2.2-win64.exe</code> -- Installer (Windows service + auto-restart, recommended)
+</p>
+
+<p align="center">
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.2/JustGivenUp-v2.2-win64.zip">
+    <code>JustGivenUp-v2.2-win64.zip</code> -- Portable ZIP (no install)
+  </a>
 </p>
 
 ### Or install via PowerShell (Admin)
@@ -66,8 +72,9 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 | **Stats Tracking** | Blocked count, relapses, streaks, warning history saved to `%APPDATA%\JustGivenUp\stats.json` |
 | **Cryptographic Time-Lock** | SHA-256 sealed via BCrypt in registry; tampering adds 90 days |
 | **Exit Prevention** | Stop/Exit grayed when locked, Alt+F4 blocked, `--emergency-stop` refused |
-| **Watchdog** | Separate process auto-restarts guardian if killed |
-| **Hidden Console** | CLI accessible in PowerShell; console hides programmatically in normal mode |
+| **Windows Service** | Runs as SYSTEM via `JustGivenUpSvc.exe`; auto-restarts guardian if killed |
+| **Auto-Restart** | `RegisterApplicationRestart` restarts on crash/kill from Task Manager |
+| **Background Operation** | Console detaches after startup; runs silently in background, no window |
 | **Custom Tray Icon** | Shield icon visible in system tray with countdown display |
 
 ---
@@ -158,6 +165,8 @@ Config is stored at `%APPDATA%\JustGivenUp\config.json`:
 
 - **Time-Lock**: Lock duration is sealed with SHA-256 via BCrypt. The registry stores a Unix timestamp and HMAC-SHA256 seal. Tampering with either value is detected and adds 90 days.
 - **No DNS blocking**: Browser processes are terminated directly. No network filtering.
+- **Windows Service**: `JustGivenUpSvc.exe` runs as SYSTEM, monitors `JustGivenUp.exe`, and restarts it within 1 second if killed.
+- **Auto-Restart**: `RegisterApplicationRestart` lets Windows Error Reporting restart the process on crash or task-kill.
 - **Watchdog**: `JustGivenUp_watchdog.exe` polls every 8 seconds and restarts the main process if killed.
 - **Locked Exit Prevention**: Stop/Exit grayed out, Alt+F4 blocked, `--emergency-stop` refused.
 - **Tamper Logging**: All tamper attempts are logged to `%APPDATA%\JustGivenUp\guardian.log`.
@@ -227,7 +236,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 | **لوحة تحكم ويب** | dashboard محلي على `http://127.0.0.1:8081` يعرض إحصائيات حية (أيام نظيفة، حالات انتكاس، السلسلة) |
 | **القفل الزمني المشفر** | SHA-256 عبر BCrypt في الريجستري؛ العبث يضيف 90 يوماً إضافية |
 | **منع الخروج** | زر الإيقاف/الخروج معطل عند القفل، Alt+F4 محظور، `--emergency-stop` مرفوض |
-| **حارس (Watchdog)** | عملية منفصلة تعيد تشغيل البرنامج تلقائياً إذا تم إيقافه |
+| **تشغيل في الخلفية** | بعد بدء التشغيل، يتم فصل الكونسول وتشغيل البرنامج في الخلفية بدون نافذة |
 | **دعم جميع المتصفحات** | Chrome, Firefox, Edge, Brave, Opera, Vivaldi, Tor, Yandex, Arc, وغيرها (30+ متصفح) |
 
 ### أوامر سطر الأوامر
@@ -293,8 +302,18 @@ ninja
 ### التحميل
 
 <p align="center" dir="rtl">
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.2/JustGivenUp-Setup-2.2-win64.exe">
+    <img src="https://img.shields.io/badge/تحميل-مثبت%20v2.2%20(41%20MB)-brightgreen?style=for-the-badge&logo=windows" alt="تحميل المثبت">
+  </a>
+</p>
+
+<p align="center" dir="rtl">
+  <code>JustGivenUp-Setup-2.2-win64.exe</code> — المثبت الرسمي (يُثبّت الخدمة وإعادة التشغيل التلقائي)
+</p>
+
+<p align="center" dir="rtl">
   <a href="https://github.com/RaGAEIDOS/justgivenup/releases/latest">
-    <img src="https://img.shields.io/github/v/release/RaGAEIDOS/justgivenup?style=for-the-badge&logo=windows&label=%D8%AA%D8%AD%D9%85%D9%8A%D9%84%20%D8%A2%D8%AE%D8%B1%20%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1&color=blue" alt="تحميل">
+    أو حمّل آخر إصدار
   </a>
 </p>
 

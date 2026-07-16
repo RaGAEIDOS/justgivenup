@@ -188,7 +188,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    ShowWindow(GetConsoleWindow(), SW_HIDE);
+    FreeConsole();
 
     Config config;
     Lock lock;
