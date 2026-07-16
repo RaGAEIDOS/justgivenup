@@ -15,6 +15,11 @@ struct AppConfig {
     std::vector<std::string> blacklist_kill;
     std::string lock_until;
     std::string lock_seal;
+    bool setup_complete = false;
+    std::string language = "en";
+    std::string user_name;
+    std::string user_work;
+    std::string user_picture;
 };
 
 class Config {

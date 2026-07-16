@@ -210,6 +210,11 @@ AppConfig Config::from_json(const json& j) {
     if (j.contains("blacklist_kill")) c.blacklist_kill = j["blacklist_kill"].get<std::vector<std::string>>();
     if (j.contains("lock_until")) c.lock_until = j["lock_until"];
     if (j.contains("lock_seal")) c.lock_seal = j["lock_seal"];
+    if (j.contains("setup_complete")) c.setup_complete = j["setup_complete"];
+    if (j.contains("language")) c.language = j["language"];
+    if (j.contains("user_name")) c.user_name = j["user_name"];
+    if (j.contains("user_work")) c.user_work = j["user_work"];
+    if (j.contains("user_picture")) c.user_picture = j["user_picture"];
     return c;
 }
 
@@ -225,6 +230,11 @@ json Config::to_json(const AppConfig& c) {
         {"blacklist_kill", c.blacklist_kill},
         {"lock_until", c.lock_until},
         {"lock_seal", c.lock_seal},
+        {"setup_complete", c.setup_complete},
+        {"language", c.language},
+        {"user_name", c.user_name},
+        {"user_work", c.user_work},
+        {"user_picture", c.user_picture},
     };
 }
 

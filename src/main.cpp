@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
     filter.set_blacklist_kill(config.get().blacklist_kill);
     killer.set_targets(config.get().browsers);
 
-    Dashboard dashboard(config.get().dashboard_port);
+    Dashboard dashboard(&config, config.get().dashboard_port);
     dashboard.start();
 
     Guardian guardian(&config, &filter, &killer, &capture, &detector, &lock);
