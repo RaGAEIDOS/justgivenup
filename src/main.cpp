@@ -116,7 +116,13 @@ void emergency_stop() {
     std::cout << "[EMERGENCY STOP] All JustGivenUp processes killed." << std::endl;
 }
 
+static void harden_process() {
+    RegisterApplicationRestart(NULL, 0);
+}
+
 int main(int argc, char* argv[]) {
+    harden_process();
+
     std::string exe = exe_dir() + "\\JustGivenUp.exe";
     std::string model_path = exe_dir() + "\\320n.onnx";
 

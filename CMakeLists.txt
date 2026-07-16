@@ -74,6 +74,21 @@ add_custom_command(TARGET JustGivenUp POST_BUILD
     "$<TARGET_FILE_DIR:JustGivenUp>/"
 )
 
+# ── Service executable ─────────────────────────────────────
+add_executable(JustGivenUpSvc
+  src/service_main.cpp
+)
+set_target_properties(JustGivenUpSvc PROPERTIES WIN32_EXECUTABLE FALSE)
+
+target_link_libraries(JustGivenUpSvc
+  kernel32
+  user32
+  shell32
+  advapi32
+  wtsapi32
+  userenv
+)
+
 # ── Watchdog executable (standalone) ──────────────────────
 add_executable(JustGivenUp_watchdog
   src/watchdog.cpp
@@ -94,7 +109,7 @@ target_include_directories(JustGivenUp_watchdog PRIVATE
 )
 
 # ── Install rules ──────────────────────────────────────────
-install(TARGETS JustGivenUp JustGivenUp_watchdog
+install(TARGETS JustGivenUp JustGivenUpSvc JustGivenUp_watchdog
   RUNTIME DESTINATION bin)
 install(FILES
   "${ONNX_BIN_DIR}/onnxruntime.dll"
