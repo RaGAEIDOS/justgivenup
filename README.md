@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/RaGAEIDOS/justgivenup/releases/latest"><img src="https://img.shields.io/github/v/release/RaGAEIDOS/justgivenup?style=for-the-badge&logo=windows&label=Download%20Latest&color=blue" alt="Download Latest"></a>
-  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/tag/v2.1"><img src="https://img.shields.io/badge/Release-v2.1-blueviolet?style=for-the-badge&logo=github" alt="Release v2.1"></a>
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/tag/v2.2"><img src="https://img.shields.io/badge/Release-v2.2-blueviolet?style=for-the-badge&logo=github" alt="Release v2.2"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT License"></a>
   <a href="https://github.com/RaGAEIDOS/justgivenup"><img src="https://img.shields.io/badge/Platform-Windows%2010%2F11-blue?style=for-the-badge&logo=windows" alt="Platform"></a>
 </p>
@@ -36,13 +36,13 @@ This is not surveillance. This is **self-respect in code form**. Set your goal, 
 ## Quick Download
 
 <p align="center">
-  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.1/JustGivenUp-v2.1-win64.zip">
-    <img src="https://img.shields.io/badge/Download-JustGivenUp!%20v2.1%20(22%20MB)-brightgreen?style=for-the-badge&logo=windows&logoColor=white" alt="Download ZIP">
+  <a href="https://github.com/RaGAEIDOS/justgivenup/releases/download/v2.2/JustGivenUp-v2.2-win64.zip">
+    <img src="https://img.shields.io/badge/Download-JustGivenUp!%20v2.2%20(22%20MB)-brightgreen?style=for-the-badge&logo=windows&logoColor=white" alt="Download ZIP">
   </a>
 </p>
 
 <p align="center">
-  <code>JustGivenUp-v2.1-win64.zip</code> -- Portable, no install required. Unzip and run.
+  <code>JustGivenUp-v2.2-win64.zip</code> -- Portable, no install required. Unzip and run.
 </p>
 
 ### Or install via PowerShell (Admin)
@@ -59,7 +59,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 |---|---|
 | **AI NSFW Detection** | Screen capture via GDI `BitBlt` every 3s, NudeNet `320n.onnx` inference via ONNX Runtime 1.26 |
 | **Tab Close (not kill)** | Warns before closing via Ctrl+W instead of killing browser process. Supports 30+ browsers |
-| **Warning Dialog** | System-modal YES/NO dialog on blacklist/NSFW hit — "Go Back" closes tab, "Continue" logs relapse |
+| **Warning Dialog** | System-modal YES/NO dialog on blacklist/NSFW hit — "Go Back" closes tab, "Continue" logs relapse. After 3 refusals, ALL browsers are killed |
 | **Smart Filtering** | Massive whitelist (200+ edu/dev platforms) skips detection; blacklist (proxy/VPN/porn/streaming/.ru) warns instantly |
 | **All-Window Scan** | `EnumWindows` checks every visible window title, not just foreground |
 | **Web Dashboard** | Local HTTP server on port 8081 with live stats (clean days, blocked count, streak, lock status) |
@@ -222,7 +222,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 | الميزة | الشرح |
 |---|---|
 | **كشف NSFW بالذكاء الاصطناعي** | تصوير الشاشة كل 3 ثوانٍ عبر GDI `BitBlt`، تحليل بنموذج NudeNet `320n.onnx` عبر ONNX Runtime |
-| **إغلاق التبويبات بدلاً من قتل المتصفح** | يحاكي الضغط على Ctrl+W لإغلاق التبويب المخالف مع نافذة تحذير |
+| **إغلاق التبويبات بدلاً من قتل المتصفح** | يحاكي الضغط على Ctrl+W لإغلاق التبويب المخالف مع نافذة تحذير. بعد 3 رفضات متتالية، تُقتل جميع المتصفحات |
 | **فلتر ذكي** | قائمة بيضاء ضخمة (200+ موقع تعليمي) تتجاوز الفحص؛ قائمة سوداء (بروكسي، VPN، إباحي، رقص، .ru) تغلق التبويب فوراً |
 | **لوحة تحكم ويب** | dashboard محلي على `http://127.0.0.1:8081` يعرض إحصائيات حية (أيام نظيفة، حالات انتكاس، السلسلة) |
 | **القفل الزمني المشفر** | SHA-256 عبر BCrypt في الريجستري؛ العبث يضيف 90 يوماً إضافية |
@@ -267,6 +267,7 @@ JustGivenUp.exe --help                       عرض المساعدة
 4. **الإجراء**: عند اكتشاف محتوى غير مناسب أو موقع محظور → نافذة تحذير ("عد إلى الخلف" أو "متابعة")
    - إذا ضغطت "عد إلى الخلف" ← يغلق التبويب (Ctrl+W)
    - إذا ضغطت "متابعة" ← يسجل انتكاسة ويستمر
+   - بعد 3 رفضات متتالية (اختيار "متابعة") ← تُقتل جميع المتصفحات
 
 ### نموذج الأمان
 
@@ -305,4 +306,18 @@ ninja
   <a href="https://github.com/RaGAEIDOS/justgivenup">
     <img src="https://img.shields.io/badge/GitHub-RaGAEIDOS%2Fjustgivenup-181717?style=for-the-badge&logo=github" alt="GitHub">
   </a>
+</p>
+
+---
+
+## 🇵🇸 Palestine
+
+<p align="center">
+  <b>Free Palestine.</b><br>
+  This project stands in solidarity with the Palestinian people and their struggle for freedom, justice, and self-determination.
+</p>
+
+<p align="center" dir="rtl">
+  <b>فلسطين حرة.</b><br>
+  هذا المشروع يقف تضامناً مع الشعب الفلسطيني في نضاله من أجل الحرية والعدالة وتقرير المصير.
 </p>
