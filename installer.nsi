@@ -3,11 +3,11 @@ Unicode true
 !include "nsDialogs.nsh"
 
 Name "JustGivenUp!"
-OutFile "build\JustGivenUp-Setup-2.2-win64.exe"
+OutFile "build\JustGivenUp-Setup-2.3-win64.exe"
 InstallDir "$PROGRAMFILES64\JustGivenUp"
 RequestExecutionLevel admin
 
-!define VERSION "2.2"
+!define VERSION "2.3"
 !define PUBLISHER "RaGAEIDOS"
 
 !define MUI_ABORTWARNING

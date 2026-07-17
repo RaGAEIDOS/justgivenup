@@ -177,6 +177,8 @@ void Config::load_defaults() {
         "rbc.ru","ria.ru","tass.ru","iz.ru","kp.ru","lenta.ru",
         "gazeta.ru","kommersant.ru","fontanka.ru","mk.ru",
         ".ru ",".ru/",".ru?","ru.wikipedia",".su ","my.mail.ru",
+        // Russian explicit content keywords
+        "лолита","лолит",
 
         // Adult content (comprehensive)
         "xnxx","xhamster","pornhub","xvideos","redtube","youporn",
