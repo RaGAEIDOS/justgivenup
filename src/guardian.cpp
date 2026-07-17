@@ -112,11 +112,9 @@ void Guardian::loop() {
                 continue;
             }
 
-            // WHITELIST skip: no detection at all
-            if (mode == FilterMode::SKIP) {
-                std::this_thread::sleep_for(std::chrono::seconds(interval));
-                continue;
-            }
+            // WHITELIST skip: skip tab-close warning but still run detection
+            // (blacklist is checked on all windows first, so this won't hide threats)
+            bool skip_warning = (mode == FilterMode::SKIP);
 
             // Capture screen
             ScreenCapture sc = _capture->capture();
@@ -142,7 +140,11 @@ void Guardian::loop() {
             }
 
             if (found_nsfw) {
-                handle_nsfw_detected("NSFW content detected on screen!");
+                if (skip_warning) {
+                    Log::instance().warn("[GUARDIAN] NSFW detected on whitelisted site (skipped warning): screen has NSFW content");
+                } else {
+                    handle_nsfw_detected("NSFW content detected on screen!");
+                }
                 _cooldown_until = now_sec + _cfg->get().cooldown_seconds;
             }
 

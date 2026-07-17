@@ -80,29 +80,32 @@ FilterMode Filter::check_window() {
 }
 
 FilterMode Filter::check_all_windows() {
-    // First check foreground window
-    FilterMode mode = check_window();
-    if (mode != FilterMode::NONE)
-        return mode;
-
     auto titles = get_all_window_titles();
+
+    // First pass: BLACKLIST in ANY window → instant kill (before any skip)
     for (const auto& t : titles) {
         std::string lower = t;
         std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
-
-        // Blacklist in any window → instant kill
         if (matches_any(lower, _blacklist_kill)) {
             Log::instance().warn("[FILTER] KILL matched (any window): " + t);
             return FilterMode::KILL;
         }
+    }
 
-        // Whitelist skip in any visible window → skip
+    // Second pass: WHITELIST in ANY window → skip detection
+    for (const auto& t : titles) {
+        std::string lower = t;
+        std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
         if (matches_any(lower, _whitelist_skip)) {
             Log::instance().debug("[FILTER] SKIP matched (any window): " + t);
             return FilterMode::SKIP;
         }
+    }
 
-        // Whitelist lenient
+    // Third pass: LENIENT in ANY window
+    for (const auto& t : titles) {
+        std::string lower = t;
+        std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
         if (matches_any(lower, _whitelist_lenient)) {
             Log::instance().debug("[FILTER] LENIENT matched (any window): " + t);
             return FilterMode::LENIENT;

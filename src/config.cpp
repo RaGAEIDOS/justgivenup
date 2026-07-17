@@ -173,10 +173,10 @@ void Config::load_defaults() {
         "whatsmyip","hidemyip","myip","ipaddress","dns leak",
 
         // Russian domains
-        "ok.ru","vk.ru","mail.ru","yandex.ru","rutube.ru","rambler.ru",
+        "ok.ru","vk.ru","mail.ru","my.mail","yandex.ru","rutube.ru","rambler.ru",
         "rbc.ru","ria.ru","tass.ru","iz.ru","kp.ru","lenta.ru",
         "gazeta.ru","kommersant.ru","fontanka.ru","mk.ru",
-        ".ru ",".ru/",".ru?","ru.wikipedia",".su ",
+        ".ru ",".ru/",".ru?","ru.wikipedia",".su ","my.mail.ru",
 
         // Adult content (comprehensive)
         "xnxx","xhamster","pornhub","xvideos","redtube","youporn",
