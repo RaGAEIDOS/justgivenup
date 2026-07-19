@@ -112,9 +112,12 @@ void Guardian::loop() {
                 continue;
             }
 
-            // WHITELIST skip: no tab-close warning, but NSFW detection still runs
-            // (blacklist is checked on all windows first, so this won't hide threats)
-            bool skip_warning = (mode == FilterMode::SKIP);
+            // WHITELIST skip: detection + warning skipped entirely
+            // (blacklist is checked on ALL windows first, so this is safe)
+            if (mode == FilterMode::SKIP) {
+                std::this_thread::sleep_for(std::chrono::seconds(interval));
+                continue;
+            }
 
             // Capture screen
             ScreenCapture sc = _capture->capture();
@@ -140,26 +143,8 @@ void Guardian::loop() {
             }
 
             if (found_nsfw) {
-                bool is_actual_nudity = false;
-                for (auto& d : detections) {
-                    if (d.score < use_threshold) continue;
-                    std::string lbl = d.label;
-                    // Only treat these as actual nudity requiring a warning
-                    if (lbl.find("EXPOSED") != std::string::npos &&
-                        lbl != "FEET_EXPOSED" &&
-                        lbl != "ARMPITS_EXPOSED" &&
-                        lbl != "BELLY_EXPOSED") {
-                        is_actual_nudity = true;
-                        break;
-                    }
-                }
-
-                if (is_actual_nudity || !skip_warning) {
-                    Log::instance().warn("[GUARDIAN] NSFW detected on screen!");
-                    handle_nsfw_detected("NSFW content detected on screen!");
-                } else {
-                    Log::instance().warn("[GUARDIAN] NSFW (face only) detected, skip_warning active");
-                }
+                Log::instance().warn("[GUARDIAN] NSFW detected on screen!");
+                handle_nsfw_detected("NSFW content detected on screen!");
                 _cooldown_until = now_sec + _cfg->get().cooldown_seconds;
             }
 
