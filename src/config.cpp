@@ -196,6 +196,7 @@ void Config::load_defaults() {
         "prime video","amazon.com/video","paramount+","peacocktv",
         "apple tv","appletv","crunchyroll","funimation","hidive",
         "twitch.tv","kick.com","trovo","dlive","streamlabs",
+        "dailymotion","dmotion",
         "spotify","deezer","tidal","pandora",
         "9anime","aniwatch","gogoanime","zoro.to","animepahe",
     };
