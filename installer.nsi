@@ -58,6 +58,9 @@ FunctionEnd
 Section "Install" SecInstall
   SetOutPath "$INSTDIR"
 
+  ; NOTE: User data in %APPDATA%\JustGivenUp\ is NEVER deleted.
+  ; config.json, guardian.log, and stats are preserved across upgrades.
+
   File "build\JustGivenUp.exe"
   File "build\JustGivenUpSvc.exe"
   File "build\JustGivenUp_watchdog.exe"

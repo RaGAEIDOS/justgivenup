@@ -20,6 +20,7 @@ struct AppConfig {
     std::string user_name;
     std::string user_work;
     std::string user_picture;
+    std::string app_version;
 };
 
 class Config {

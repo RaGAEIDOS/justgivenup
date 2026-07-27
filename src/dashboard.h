@@ -26,6 +26,7 @@ private:
     std::string api_save_settings(const std::string& body);
     std::string api_check_update();
     std::string api_stats();
+    std::string api_changelog();
     void read_body(int sock, std::string& body, int content_len);
     Config* _cfg;
     int _port;

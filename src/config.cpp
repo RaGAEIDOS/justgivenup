@@ -219,6 +219,7 @@ AppConfig Config::from_json(const json& j) {
     if (j.contains("user_name")) c.user_name = j["user_name"];
     if (j.contains("user_work")) c.user_work = j["user_work"];
     if (j.contains("user_picture")) c.user_picture = j["user_picture"];
+    if (j.contains("app_version")) c.app_version = j["app_version"];
     return c;
 }
 
@@ -239,6 +240,7 @@ json Config::to_json(const AppConfig& c) {
         {"user_name", c.user_name},
         {"user_work", c.user_work},
         {"user_picture", c.user_picture},
+        {"app_version", c.app_version},
     };
 }
 

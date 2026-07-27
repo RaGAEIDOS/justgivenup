@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
     std::string exe = exe_dir() + "\\JustGivenUp.exe";
     std::string model_path = exe_dir() + "\\320n.onnx";
 
-    Log::instance().info("=== JustGivenUp! v2.2 (C++) ===");
+    Log::instance().info("=== JustGivenUp! v2.3 (C++) ===");
 
     if (argc > 1) {
         std::string cmd = argv[1];
@@ -191,6 +191,16 @@ int main(int argc, char* argv[]) {
     FreeConsole();
 
     Config config;
+
+    // Version migration: detect upgrade and preserve user data
+    std::string current_ver = "2.3";
+    std::string prev_ver = config.get().app_version;
+    if (!prev_ver.empty() && prev_ver != current_ver) {
+        Log::instance().info("[MAIN] Upgraded from v" + prev_ver + " to v" + current_ver + " -- preserving user data");
+    }
+    config.get().app_version = current_ver;
+    config.save();
+
     Lock lock;
     Filter filter;
     BrowserManager killer;

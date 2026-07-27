@@ -392,8 +392,87 @@ std::string Dashboard::api_check_update() {
     // Simple check via GitHub API (connecting from C++ side)
     // Returns current version info
     json j;
-    j["current_version"] = "v2.2";
+    j["current_version"] = "v2.3";
     j["check_url"] = "https://github.com/RaGAEIDOS/justgivenup/releases/latest";
+    return http_json(200, j.dump(2));
+}
+
+std::string Dashboard::api_changelog() {
+    std::string prev = _cfg->get().app_version;
+    std::string current = "2.3";
+    bool upgraded = (!prev.empty() && prev != current);
+
+    json j;
+    j["current_version"] = current;
+    j["previous_version"] = prev;
+    j["upgraded"] = upgraded;
+
+    // Full changelog
+    json entries = json::array();
+    entries.push_back({
+        {"version", "2.3"},
+        {"title_en", "Filter & NSFW Logic Fixes"},
+        {"title_ar", "إصلاحات الفلتر وكشف المحتوى"},
+        {"date", "2026-07-19"},
+        {"changes_en", json::array({
+            "YouTube Arabic title fix: يوتيوب/يوتيب now properly skipped",
+            "Blacklist checked on ALL windows before any whitelist skip",
+            "Dailymotion added to blacklist",
+            "Cyrillic keywords for Russian explicit content (лолита/лолит)",
+            "FreeConsole() so guardian survives terminal close",
+            "Setup wizard, profile, 13-rank system, Arabic/English i18n",
+            "User data preserved across updates"
+        })},
+        {"changes_ar", json::array({
+            "إصلاح عنوان اليوتيوب العربي: يوتيوب/يوتيب تتم معالجتها بشكل صحيح",
+            "القائمة السوداء تُفحص على جميع النوافذ قبل أي تخطي",
+            "إضافة Dailymotion إلى القائمة السوداء",
+            "كلمات مفتاحية روسية للمحتوى الإباحي (лолита/лолит)",
+            "FreeConsole() لضمان بقاء الحارس يعمل عند إغلاق الطرفية",
+            "معالج الإعداد الأولي، الملف الشخصي، نظام الرتب، الترجمة العربية/الإنجليزية",
+            "حفظ بيانات المستخدم أثناء التحديث"
+        })}
+    });
+    entries.push_back({
+        {"version", "2.2"},
+        {"title_en", "Dashboard & Installer"},
+        {"title_ar", "لوحة التحكم والمثبّت"},
+        {"date", "2026-07-17"},
+        {"changes_en", json::array({
+            "Full dashboard with stats, activity history, profile",
+            "NSIS installer with shortcuts and auto-start",
+            "System tray icon with status",
+            "Configurable NSFW threshold and intervals"
+        })},
+        {"changes_ar", json::array({
+            "لوحة تحكم كاملة مع إحصائيات وسجل النشاط",
+            "مثبّت NSIS مع اختصارات وتشغيل تلقائي",
+            "أيقونة صينية مع حالة النظام",
+            "ضبط عتبة NSFW والفواصل الزمنية"
+        })}
+    });
+    entries.push_back({
+        {"version", "2.1"},
+        {"title_en", "Initial Release"},
+        {"title_ar", "الإصدار الأول"},
+        {"date", "2026-07-15"},
+        {"changes_en", json::array({
+            "AI-powered NSFW detection using NudeNet ONNX model",
+            "Smart window title filtering (blacklist/whitelist)",
+            "Browser tab close on detection",
+            "Encrypted time-lock system",
+            "Watchdog process for tamper protection"
+        })},
+        {"changes_ar", json::array({
+            "كشف المحتوى غير المناسب بالذكاء الاصطناعي باستخدام نموذج NudeNet",
+            "فلتر ذكي لعناوين النوافذ (قائمة سوداء/بيضاء)",
+            "إغلاق تبويب المتصفح عند الكشف",
+            "نظام قفل زمني مشفر",
+            "عملية حارس للحماية من التلاعب"
+        })}
+    });
+
+    j["entries"] = entries;
     return http_json(200, j.dump(2));
 }
 
@@ -417,6 +496,7 @@ std::string Dashboard::handle_request(const std::string& method, const std::stri
     if (path == "/api/settings" && method == "GET") return api_settings();
     if (path == "/api/settings" && method == "POST") return api_save_settings(body);
     if (path == "/api/check-update") return api_check_update();
+    if (path == "/api/changelog") return api_changelog();
     if (path == "/") return http_html(dashboard_html());
     return http_html(dashboard_html());
 }
@@ -539,6 +619,7 @@ body.rtl .main{margin-left:0;margin-right:220px}
 .toast.show{opacity:1}
 .toast.success{border-color:#66bb6a;color:#66bb6a}
 .toast.error{border-color:#ef5350;color:#ef5350}
+#upgrade-toast:hover{background:#1a237e}
 .update-check{display:inline-flex;align-items:center;gap:8px}
 .update-check .spinner{width:16px;height:16px;border:2px solid #2a2a4a;border-top-color:#4fc3f7;border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -550,13 +631,14 @@ body.rtl .main{margin-left:0;margin-right:220px}
 <div class="sidebar">
 <div class="brand">
 <h2>JustGivenUp!</h2>
-<div class="ver">v2.2</div>
+<div class="ver">v2.3</div>
 </div>
 <nav>
 <a href="#" data-tab="dashboard" class="active"><span class="icon">&#x1F4CA;</span> <span data-i18n="dashboard">Dashboard</span></a>
 <a href="#" data-tab="profile"><span class="icon">&#x1F464;</span> <span data-i18n="profile">Profile</span></a>
 <a href="#" data-tab="ranks"><span class="icon">&#x1F3C6;</span> <span data-i18n="ranks">Ranks</span></a>
 <a href="#" data-tab="settings"><span class="icon">&#x2699;&#xFE0F;</span> <span data-i18n="settings">Settings</span></a>
+<a href="#" data-tab="changelog"><span class="icon">&#x1F4DD;</span> <span data-i18n="whats_new">What's New</span></a>
 <a href="#" data-tab="dashboard" id="check-update-link"><span class="icon">&#x1F504;</span> <span data-i18n="check_update">Check Update</span></a>
 </nav>
 </div>
@@ -628,7 +710,7 @@ body.rtl .main{margin-left:0;margin-right:220px}
 <div class="card">
 <h3 data-i18n="about">About</h3>
 <p style="color:#888;font-size:0.9em;line-height:1.6">
-<strong>JustGivenUp! v2.2</strong><br>
+<strong>JustGivenUp! v2.3</strong><br>
 <span data-i18n="about_desc">A tamper-proof Windows screen guardian with AI-powered NSFW detection, smart filtering, and cryptographic time-lock.</span><br><br>
 <span data-i18n="build_info">Built with C++23 / MinGW / ONNX Runtime / Ninja</span><br>
 <a href="https://github.com/RaGAEIDOS/justgivenup" style="color:#4fc3f7" target="_blank">GitHub</a>
@@ -637,12 +719,34 @@ body.rtl .main{margin-left:0;margin-right:220px}
 </div>
 
 </div>
+
+<div id="tab-changelog" class="tab">
+<div id="upgrade-banner" style="display:none;background:linear-gradient(135deg,#1a237e,#0d47a1);border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #42a5f5">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="font-size:2em">&#x1F389;</div>
+<div>
+<div style="font-weight:600;font-size:1.1em;color:#fff" data-i18n="upgrade_title">JustGivenUp has been updated!</div>
+<div style="color:#90caf9;font-size:0.9em" data-i18n="upgrade_desc">Your data has been preserved. Here's what's new:</div>
+</div>
+</div>
+</div>
+<div class="card">
+<h3 data-i18n="whats_new">What's New</h3>
+<div id="changelog-list" style="display:flex;flex-direction:column;gap:16px"></div>
+</div>
+</div>
+
+</div>
 </div>
 </div>
 <div id="toast" class="toast"></div>
+<div id="upgrade-toast" style="display:none;position:fixed;top:20px;right:20px;background:#1a237e;border:1px solid #42a5f5;border-radius:12px;padding:16px 24px;z-index:10001;cursor:pointer;max-width:350px" onclick="switchTab('changelog');this.style.display='none'">
+<div style="font-weight:600;color:#fff;margin-bottom:4px" data-i18n="upgrade_toast_title">New version installed!</div>
+<div style="color:#90caf9;font-size:0.85em" data-i18n="upgrade_toast_desc">Click to see what's new</div>
+</div>
 
 <script>
-const VERSION = "v2.2";
+const VERSION = "v2.3";
 let currentLang = "en";
 
 const I18N = {
@@ -688,7 +792,13 @@ lock_inactive:"UNLOCKED -- No active time-lock",
 recent_activity_title:"Recent Activity",
 activity_blocked:"Attempt Blocked",
 activity_relapse:"Relapse",
-activity_none:"No activity recorded yet -- keep it that way!"
+activity_none:"No activity recorded yet -- keep it that way!",
+whats_new:"What's New",upgrade_title:"JustGivenUp has been updated!",
+upgrade_desc:"Your data has been preserved. Here's what's new:",
+upgrade_toast_title:"New version installed!",
+upgrade_toast_desc:"Click to see what's new",
+changelog_version:"Version",
+changelog_date:"Released"
 },
 ar: {
 dashboard:"لوحة التحكم",profile:"الملف الشخصي",ranks:"الرتب",settings:"الإعدادات",check_update:"التحقق من التحديثات",
@@ -731,7 +841,13 @@ lock_inactive:"غير مقفل -- لا يوجد قفل زمني نشط",
 recent_activity_title:"النشاط الأخير",
 activity_blocked:"تم حظر محاولة",
 activity_relapse:"انتكاسة",
-activity_none:"لا يوجد نشاط مسجل بعد -- حافظ على ذلك!"
+activity_none:"لا يوجد نشاط مسجل بعد -- حافظ على ذلك!",
+whats_new:"ما الجديد",upgrade_title:"تم تحديث JustGivenUp!",
+upgrade_desc:"تم حفظ بياناتك. هذه هي التحديثات الجديدة:",
+upgrade_toast_title:"تم تثبيت إصدار جديد!",
+upgrade_toast_desc:"انقر لترى ما الجديد",
+changelog_version:"الإصدار",
+changelog_date:"تاريخ الإصدار"
 }
 };
 
@@ -774,6 +890,7 @@ checkUpdate(); return;
 switchTab(tab);
 if (tab === 'ranks') loadRanks();
 if (tab === 'profile') loadProfile();
+if (tab === 'changelog') loadChangelog();
 });
 });
 
@@ -1057,6 +1174,41 @@ list.innerHTML = html;
 } catch(e) { console.error('Stats fetch failed:', e); }
 }
 
+async function loadChangelog() {
+try {
+const r = await fetch('/api/changelog');
+const d = await r.json();
+const list = document.getElementById('changelog-list');
+const banner = document.getElementById('upgrade-banner');
+if (banner) banner.style.display = d.upgraded ? 'block' : 'none';
+let html = '';
+(d.entries || []).forEach(entry => {
+const isCurrent = entry.version === d.current_version && d.upgraded;
+const changesHtml = (currentLang === 'ar' ? entry.changes_ar : entry.changes_en || entry.changes_en || []).map(c => '<li>' + c + '</li>').join('');
+html += '<div style="background:#1a1a2e;border:1px solid ' + (isCurrent ? '#4fc3f7' : '#2a2a4a') + ';border-radius:10px;padding:18px">' +
+'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">' +
+'<div><span style="color:#4fc3f7;font-weight:700;font-size:1.1em">' + (currentLang === 'ar' ? entry.title_ar : entry.title_en) + '</span>' +
+' <span style="background:#2a2a4a;color:#888;padding:2px 10px;border-radius:12px;font-size:0.75em;margin-left:8px">' + entry.version + '</span></div>' +
+'<span style="color:#555;font-size:0.8em">' + (entry.date || '') + '</span></div>' +
+'<ul style="color:#aaa;font-size:0.9em;line-height:1.8;padding-left:20px;margin:0">' + changesHtml + '</ul></div>';
+});
+list.innerHTML = html;
+} catch(e) {
+document.getElementById('changelog-list').innerHTML = '<div style="color:#888">Error loading changelog</div>';
+}
+}
+
+async function checkForUpgrade() {
+try {
+const r = await fetch('/api/changelog');
+const d = await r.json();
+if (d.upgraded) {
+const toast = document.getElementById('upgrade-toast');
+if (toast) { toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 8000); }
+}
+} catch(e) {}
+}
+
 // Init
 (async function init() {
 try {
@@ -1072,6 +1224,7 @@ loadProfile();
 loadSettings();
 refresh();
 setInterval(refresh, 5000);
+checkForUpgrade();
 }
 } catch(e) {
 document.getElementById('app').style.display = 'flex';
