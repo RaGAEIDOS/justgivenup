@@ -1,7 +1,7 @@
 #!/bin/sh
 # JustGivenUp! — adds the apt repository and installs the package.
 #
-#   curl -fsSL https://RaGAEIDOS.github.io/justgivenup/install.sh | sudo sh
+#   curl -fsSL https://ragaeidos.website/justgivenup/install.sh | sudo sh
 #
 # Run as root. Everything after this runs as a normal apt install.
 set -e
@@ -11,7 +11,7 @@ REPO_FILE="/etc/apt/sources.list.d/justgivenup.list"
 echo "=== JustGivenUp! Guardian — apt repository setup ==="
 echo "Writing $REPO_FILE ..."
 cat > "$REPO_FILE" <<'EOF'
-deb [trusted=yes] https://RaGAEIDOS.github.io/justgivenup stable main
+deb [trusted=yes] https://ragaeidos.website/justgivenup stable main
 EOF
 
 echo "Updating package indexes (expected: 'no InRelease' is fine — trusted=yes) ..."

@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://github.com/RaGAEIDOS/justgivenup/releases/latest"><img src="https://img.shields.io/badge/Download-Latest-blue?style=for-the-badge" alt="Download Latest"></a>
-  <a href="https://RaGAEIDOS.github.io/justgivenup/"><img src="https://img.shields.io/badge/Debian%20apt%20repo-2499ed?style=for-the-badge" alt="apt repo"></a>
+  <a href="https://ragaeidos.website/justgivenup/"><img src="https://img.shields.io/badge/Debian%20apt%20repo-2499ed?style=for-the-badge" alt="apt repo"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT License"></a>
   <a href="https://github.com/RaGAEIDOS/justgivenup"><img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue?style=for-the-badge" alt="Platform"></a>
 </p>
@@ -42,13 +42,13 @@
 **Linux (Debian/Ubuntu/Mint) عبر apt:**
 
 ```bash
-curl -fsSL https://RaGAEIDOS.github.io/justgivenup/install.sh | sudo sh
+curl -fsSL https://ragaeidos.website/justgivenup/install.sh | sudo sh
 ```
 
 أو يدويًا:
 
 ```bash
-echo "deb [trusted=yes] https://RaGAEIDOS.github.io/justgivenup stable main" \
+echo "deb [trusted=yes] https://ragaeidos.website/justgivenup stable main" \
   | sudo tee /etc/apt/sources.list.d/justgivenup.list
 sudo apt update && sudo apt install justgivenup
 ```
@@ -126,7 +126,7 @@ justgivenup/
 ### 📥 Install (Linux)
 
 ```bash
-curl -fsSL https://RaGAEIDOS.github.io/justgivenup/install.sh | sudo sh
+curl -fsSL https://ragaeidos.website/justgivenup/install.sh | sudo sh
 ```
 
 Then open http://127.0.0.1:8081 and finish the setup wizard. The service

@@ -65,20 +65,20 @@
     <h2><span class="emoji">📥</span> <span id="install-h">التثبيت — Linux (apt)</span></h2>
     <p id="install-p">سطر واحد يضيف المستودع، ثم ثبّت الحزمة كأنها أي برنامج عادي:</p>
     <div class="cmd">
-      <pre id="cmd-apt">curl -fsSL https://RaGAEIDOS.github.io/justgivenup/install.sh | sudo sh
+      <pre id="cmd-apt">curl -fsSL https://ragaeidos.website/justgivenup/install.sh | sudo sh
 sudo apt update &amp;&amp; sudo apt install justgivenup</pre>
       <button type="button" id="copy-apt">نسخ</button>
     </div>
     <div class="row" style="margin-top:12px">
-      <a class="btn" href="https://RaGAEIDOS.github.io/justgivenup/install.sh" id="dl-script">تنزيل install.sh</a>
-      <a class="btn" href="https://RaGAEIDOS.github.io/justgivenup/extensions/justgivenup-chrome-3.0.0.zip" id="dl-chrome">إكستنشن Chrome (zip)</a>
-      <a class="btn" href="https://RaGAEIDOS.github.io/justgivenup/extensions/justgivenup-firefox-3.0.0.xpi" id="dl-ff">إكستنشن Firefox (.xpi)</a>
+      <a class="btn" href="https://ragaeidos.website/justgivenup/install.sh" id="dl-script">تنزيل install.sh</a>
+      <a class="btn" href="https://ragaeidos.website/justgivenup/extensions/justgivenup-chrome-3.0.0.zip" id="dl-chrome">إكستنشن Chrome (zip)</a>
+      <a class="btn" href="https://ragaeidos.website/justgivenup/extensions/justgivenup-firefox-3.0.0.xpi" id="dl-ff">إكستنشن Firefox (.xpi)</a>
     </div>
     <p class="note" id="install-note">بعد التثبيت افتح http://127.0.0.1:8081 وأكمل المعالج. الخدمة تعمل تلقائيًا مع إقلاع النظام.</p>
     <details>
       <summary id="manual-summary">التثبيت يدويًا بدون سكربت</summary>
       <div class="cmd" style="margin-top:8px">
-        <pre id="cmd-manual">echo "deb [trusted=yes] https://RaGAEIDOS.github.io/justgivenup stable main" \
+        <pre id="cmd-manual">echo "deb [trusted=yes] https://ragaeidos.website/justgivenup stable main" \
   | sudo tee /etc/apt/sources.list.d/justgivenup.list
 sudo apt update &amp;&amp; sudo apt install justgivenup</pre>
         <button type="button" id="copy-manual">نسخ</button>

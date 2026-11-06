@@ -5,7 +5,7 @@
 # Output: site-build/  (ready to publish as the gh-pages branch root)
 #
 # Users then run:
-#   echo "deb [trusted=yes] https://RaGAEIDOS.github.io/justgivenup stable main" \
+#   echo "deb [trusted=yes] https://ragaeidos.website/justgivenup stable main" \
 #     | sudo tee /etc/apt/sources.list.d/justgivenup.list
 #   sudo apt update && sudo apt install justgivenup
 set -e
@@ -66,6 +66,6 @@ done
 
 echo "apt repository ready in: $SITE"
 echo "  add the repo with:"
-echo '  echo "deb [trusted=yes] https://RaGAEIDOS.github.io/justgivenup stable main" | sudo tee /etc/apt/sources.list.d/justgivenup.list'
+echo '  echo "deb [trusted=yes] https://ragaeidos.website/justgivenup stable main" | sudo tee /etc/apt/sources.list.d/justgivenup.list'
 echo "  sudo apt update && sudo apt install justgivenup"
 ls -R "$SITE" | head -30
