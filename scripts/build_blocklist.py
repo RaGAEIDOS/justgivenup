@@ -9,7 +9,8 @@ Outputs
   data/blocklist_full.txt   every domain -> /etc/hosts tier (~150k)
   data/blocklist_core.txt   popular registrable domains -> browser policy
                             + extension rules.json
-  extension/rules.json      declarativeNetRequest static rules
+  extension/rules.json      declarativeNetRequest static rules (Chrome)
+  extension/rules.firefox.json   Firefox DNR rules (no transform support)
 
 Run:  python3 scripts/build_blocklist.py [--no-fetch]
 """
@@ -21,6 +22,7 @@ import json
 import pathlib
 import re
 import sys
+import time
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -33,6 +35,7 @@ SRC_URL = ("https://raw.githubusercontent.com/StevenBlack/hosts"
 CACHE = ROOT / "scripts" / ".cache" / "porn-hosts.txt"
 DATA = ROOT / "data"
 RULES_OUT = ROOT / "extension" / "rules.json"
+RULES_OUT_FF = ROOT / "extension" / "rules.firefox.json"
 
 MAX_CORE = 15_000          # safety cap for policy / DNR tiers
 CORE_NAME_LEN = 6          # registrable label length heuristic (short = popular)
@@ -57,57 +60,79 @@ MULTI_TLDS = {
     "com.pk", "net.pk", "org.pk", "com.bd", "com.np",
     "com.co", "net.co", "org.co", "com.ve", "com.pe", "com.ec",
     "com.uy", "com.bo", "com.py", "com.gt", "com.do", "com.pr",
-    "co.ke", "com.ng", "com.gh", "com.zw", "co.tz", "com.ug",
-    "com.cy", "com.mt", "com.by", "com.kz", "com.az", "com.ge",
-    "com.ba", "com.mk", "com.al", "com.me", "com.mv", "com.fj",
-    "eu.org", "com.de", "co.at", "or.at", "com.hr", "com.ro",
-    "com.hr", "co.hu", "com.gr", "com.pt", "com.it", "com.se",
-    "org.se", "com.dk", "com.fi", "com.no", "co.no",
+    "eu.org",
 }
+
+# --- Legitimate sites that must NEVER be blocked (safety allowlist) ---
+# These are collapsed from subdomains in the upstream list (e.g.
+# www.google.com -> google.com) and would otherwise slip into core/full
+# because of short first labels or other heuristics.
+LEGIT_DOMAINS = [
+    "google.com", "youtube.com", "facebook.com", "instagram.com", "twitter.com",
+    "wikipedia.org", "reddit.com", "microsoft.com", "apple.com", "amazon.com",
+    "netflix.com", "linkedin.com", "github.com", "stackoverflow.com",
+    "discord.com", "twitch.tv", "spotify.com", "icloud.com", "adobe.com",
+    "dropbox.com", "paypal.com", "ebay.com", "aliexpress.com", "walmart.com",
+    "target.com", "samsung.com", "sony.com", "nintendo.com",
+    "steampowered.com", "epicgames.com", "origin.com", "uplay.com",
+    "battle.net", "riotgames.com", "mojang.com", "roblox.com",
+    "cloudflare.com", "akamai.com", "fastly.com",
+    "verizon.com", "att.com", "t-mobile.com", "vodafone.com",
+    "orange.com", "telefonica.com", "dtag.com", "bt.com",
+    "bbc.co.uk", "nytimes.com", "washingtonpost.com", "theguardian.com",
+    "reuters.com", "apnews.com", "bloomberg.com", "wsj.com", "forbes.com",
+    "cnn.com", "foxnews.com", "aljazeera.com", "dw.com", "france24.com",
+    "google.co.uk", "google.ca", "google.co.in", "google.co.jp",
+    "google.co.za", "google.com.au", "google.de", "google.fr", "google.it",
+    "google.es", "google.nl", "google.se", "google.no", "google.dk",
+    "google.fi", "google.pl", "google.cz", "google.hu", "google.ro",
+    "google.hr", "google.ie", "google.pt", "google.gr", "google.tr",
+    "google.com.br", "google.com.mx", "google.com.ar", "google.com.co",
+    "google.com.pe", "google.com.ve", "google.com.cl", "google.com.uy",
+    "google.com.py", "google.com.ec", "google.com.bo",
+    "google.com.sv", "google.com.gt", "google.com.hn", "google.com.cr",
+    "google.com.pa", "google.com.do", "google.com.pr",
+    "google.be", "google.com.vn", "amazon.co.jp", "amazon.de",
+    "amazon.dev", "amazon.it", "apple.com.cn", "cnn.cm", "cnn.io",
+    "github.io", "reddit.rest", "sony.jp",
+]
 
 # Popular domains we always want in the core tier (short names usually
 # catch them anyway; this is belt & braces for mirrors/CDN hosts).
 KNOWN_MAJORS = [
     "pornhub.com", "xvideos.com", "xnxx.com", "xhamster.com", "redtube.com",
     "youporn.com", "tube8.com", "spankbang.com", "eporner.com", "porntube.com",
-    "xfinityporn.com", "motherless.com", "beeg.com", "daftsex.com", "hclips.com",
-    "tktube.com", "porndoe.com", "porndig.com", "porndroids.com", "pornone.com",
-    "missav.com", "javhd.com", "hanime.tv", "nhentai.net", "e621.net",
-    "gelbooru.com", "rule34.xxx", "danbooru.donmai.us", "safebooru.org",
-    "onlyfans.com", "fansly.com", "stripchat.com", "chaturbate.com",
-    "cam4.com", "bongacams.com", "livejasmin.com", "myfreecams.com",
-    "streamate.com", "flirt4free.com", "camcontacts.com", "livecam.com",
-    "omegle.com", "chatroulette.com", "chatrandom.com", "cocochat.com",
-    "adriendelvaux.com",
-    "ashleymadison.com", "adultfriendfinder.com", "fling.com", "sex.com",
-    "tnaflix.com", "empflix.com", "redtube.xxx", "tubeon.com", "sunporno.com",
-    "zbporn.com", "fakeraptor.com", "4tube.com", "thumbzilla.com", "fuq.com",
-    "www.xnxx.com", "sexytube.me", "txxx.com", "biguz.net", "porncorn.com",
-    "hotmovs.com", "milfzr.com", "porndig.com", "anyporn.com", "asspornxxx.com",
-    "xcafe.com", "vikiporn.com", "proporn.com", "sundosex.com", "kysqxs.com",
-    "myporntube.com", "freepornhere.com", "freepornhq.com", "freepornpics.net",
-    "sexu.com", "pornhat.com", "pornpics.com", "icanw.com", "24videos.tv",
+    "motherless.com", "beeg.com", "daftsex.com", "hclips.com",
+    "tktube.com", "porndoe.com", "porndig.com", "porndroids.com",
+    "pornone.com", "missav.com", "javhd.com", "hanime.tv", "nhentai.net",
+    "e621.net", "gelbooru.com", "rule34.xxx", "danbooru.donmai.us",
+    "safebooru.org", "onlyfans.com", "fansly.com", "stripchat.com",
+    "chaturbate.com", "cam4.com", "bongacams.com", "livejasmin.com",
+    "myfreecams.com", "streamate.com", "flirt4free.com", "camcontacts.com",
+    "livecam.com", "omegle.com", "chatroulette.com", "chatrandom.com",
+    "cocochat.com", "adriendelvaux.com", "ashleymadison.com",
+    "adultfriendfinder.com", "fling.com", "sex.com",
+    "tnaflix.com", "empflix.com", "redtube.xxx", "tubeon.com",
+    "sunporno.com", "zbporn.com", "fakeraptor.com", "4tube.com",
+    "thumbzilla.com", "fuq.com", "www.xnxx.com", "sexytube.me",
+    "txxx.com", "biguz.net", "porncorn.com", "hotmovs.com", "milfzr.com",
+    "anyporn.com", "asspornxxx.com", "xcafe.com", "vikiporn.com",
+    "proporn.com", "sundosex.com", "kysqxs.com", "myporntube.com",
+    "freepornhere.com", "freepornhq.com", "freepornpics.net", "sexu.com",
+    "pornhat.com", "pornpics.com", "icanw.com", "24videos.tv",
     "sweet-eva.com", "watchmygf.me", "porcore.com", "sexvideosporn.com",
     "ixxx.com", "hdzog.com", "tube-mix.com", "watchpornfree.info",
     "freeporn8.com", "gonzoxxx.com", "porndollars.com", "analporn.com",
-    "eroprofile.com", "imagefap.com", "fapdu.com", "msculpin.com",
-    "thisvid.com", "fux.com", "porndoe.com", "drtuber.com", "pornxs.com",
-    "iceporn.com", "motherless.com", "youjizz.com", "eporner.com",
-    "porn.com", "pornerbros.com", "pornomine.com", "videos.pornototale.com",
-    "xkeezmovies.com", "keezmovies.com", "sunporno.com", "wowporn.com",
-    "bestjavporn.com", "javporn.tv", "avgle.com", "supjav.com", "njav.tv",
-    "tokyomotion.net", "porndish.com", "porndoe.com", "porndroids.com",
-    "onlyporns.com", "fapster.com", "porngem.com", "txxx.com",
-    "redgifs.com", "gfycat.com",  # explicit-by-default hosts
-    "i.pornpics.com", "pic.xxx", "imagepornhub.com", "xxxbunker.com",
-    "porndoe.com", "pornhat.com", "pop6.com", "bitchesgirls.com",
-    "hentaigasm.com", "hentaihaven.xxx", "hanime.tv", "nhentai.net",
-    "hitomi.la", "e-hentai.org", "exhentai.org", "danbooru.donmai.us",
-    "nekopoi.care", "animehitai.com", "hanime.video", "hentaistream.xxx",
-    "porntube.com", "pornbraze.com", "dansmovies.com", "beegporn.com",
+    "eroprofile.com", "imagefap.com", "fapdu.com", "thisvid.com",
+    "fux.com", "drtuber.com", "pornxs.com", "iceporn.com",
+    "motherless.com", "youjizz.com", "eporner.com", "porn.com",
+    "pornerbros.com", "pornomine.com", "xkeezmovies.com", "keezmovies.com",
+    "wowporn.com", "bestjavporn.com", "javporn.tv", "avgle.com",
+    "supjav.com", "njav.tv", "tokyomotion.net", "porndish.com",
+    "pornbraze.com", "dansmovies.com", "beegporn.com", "xnxx.com",
+    "redgifs.com", "gfycat.com", "xxxbunker.com",
 ]
 
-# Filtering regex for the upstream hosts file
 LINE_RE = re.compile(r"^(?:0\.0\.0\.0|127\.0\.0\.1)\s+([A-Za-z0-9._-]+)\s*$")
 SKIP_DOMAINS = {
     "localhost", "local", "broadcasthost", "0.0.0.0", "localhost.localdomain",
@@ -136,8 +161,6 @@ def fetch_sources(no_fetch: bool) -> str:
 
 
 def _cache_is_fresh() -> bool:
-    import time
-
     age = time.time() - CACHE.stat().st_mtime
     return age < 30 * 86400
 
@@ -160,44 +183,44 @@ def valid_domain(d: str) -> bool:
 
 
 SAFE_SEARCH_RULES = [
-        # ---- Safe Search hardening (search engines only) ----
-        {
-            "id": 10,
-            "priority": 2,
-            "action": {"type": "redirect", "redirect": {"transform": {
-                "queryTransform": {"addOrReplaceParams": [
-                    {"key": "safe", "value": "active"}]}}}},
-            "condition": {"urlFilter": "||google.com/search",
-                          "resourceTypes": ["main_frame"]},
-        },
-        {
-            "id": 11,
-            "priority": 2,
-            "action": {"type": "redirect", "redirect": {"transform": {
-                "queryTransform": {"addOrReplaceParams": [
-                    {"key": "safe", "value": "active"}]}}}},
-            "condition": {"urlFilter": "||google.co.uk/search",
-                          "resourceTypes": ["main_frame"]},
-        },
-        {
-            "id": 12,
-            "priority": 2,
-            "action": {"type": "redirect", "redirect": {"transform": {
-                "queryTransform": {"addOrReplaceParams": [
-                    {"key": "adlt", "value": "strict"}]}}}},
-            "condition": {"urlFilter": "||bing.com/search",
-                          "resourceTypes": ["main_frame"]},
-        },
-        {
-            "id": 13,
-            "priority": 2,
-            "action": {"type": "redirect", "redirect": {"transform": {
-                "queryTransform": {"addOrReplaceParams": [
-                    {"key": "kp", "value": "-1"}]}}}},
-            "condition": {"urlFilter": "||duckduckgo.com/",
-                          "resourceTypes": ["main_frame"]},
-        },
-    ]
+    # Safe Search hardening (search engines only)
+    {
+        "id": 10,
+        "priority": 2,
+        "action": {"type": "redirect", "redirect": {"transform": {
+            "queryTransform": {"addOrReplaceParams": [
+                {"key": "safe", "value": "active"}]}}}},
+        "condition": {"urlFilter": "||google.com/search",
+                      "resourceTypes": ["main_frame"]},
+    },
+    {
+        "id": 11,
+        "priority": 2,
+        "action": {"type": "redirect", "redirect": {"transform": {
+            "queryTransform": {"addOrReplaceParams": [
+                {"key": "safe", "value": "active"}]}}}},
+        "condition": {"urlFilter": "||google.co.uk/search",
+                      "resourceTypes": ["main_frame"]},
+    },
+    {
+        "id": 12,
+        "priority": 2,
+        "action": {"type": "redirect", "redirect": {"transform": {
+            "queryTransform": {"addOrReplaceParams": [
+                {"key": "adlt", "value": "strict"}]}}}},
+        "condition": {"urlFilter": "||bing.com/search",
+                      "resourceTypes": ["main_frame"]},
+    },
+    {
+        "id": 13,
+        "priority": 2,
+        "action": {"type": "redirect", "redirect": {"transform": {
+            "queryTransform": {"addOrReplaceParams": [
+                {"key": "kp", "value": "-1"}]}}}},
+        "condition": {"urlFilter": "||duckduckgo.com/",
+                      "resourceTypes": ["main_frame"]},
+    },
+]
 
 
 def build_rules(core: list[str], for_firefox: bool = False) -> list[dict]:
@@ -214,18 +237,19 @@ def build_rules(core: list[str], for_firefox: bool = False) -> list[dict]:
             "priority": 1,
             "action": {"type": "redirect",
                        "redirect": {"extensionPath": "/blocked.html"}},
-            "condition": {"requestDomains": core, "resourceTypes": ["main_frame"]},
+            "condition": {"requestDomains": core,
+                          "resourceTypes": ["main_frame"]},
         },
         {
             "id": 2,
             "priority": 1,
             "action": {"type": "block"},
-            "condition": {"requestDomains": core, "resourceTypes": blocked_types},
+            "condition": {"requestDomains": core,
+                          "resourceTypes": blocked_types},
         },
     ]
-    # Firefox DNR 115+ rejects the whole SET if any rule uses `transform`
-    # (unsupported) — dropping the safe-search rules there is what makes
-    # the core redirect + block rules apply at all on Firefox.
+    # Firefox DNR rejects the whole SET if any rule uses `transform`
+    # (unsupported) — dropping safe-search rules there lets core rules apply.
     if not for_firefox:
         rules += SAFE_SEARCH_RULES
     return rules
@@ -253,8 +277,11 @@ def main() -> int:
     full.update(majors)
 
     regs = {registrable(d) for d in full if valid_domain(d)}
+    # remove legitimate sites from the blocklist entirely (safety allowlist)
+    regs -= set(LEGIT_DOMAINS)
     for d in extras + majors:
         regs.add(registrable(d))
+    regs -= set(LEGIT_DOMAINS)  # also in case majors/extras overlap legit
 
     # heuristic: shorter first label ~= older/popular site
     core_list = sorted(
@@ -262,14 +289,16 @@ def main() -> int:
         key=lambda d: (len(d.split(".")[0]), d),
     )
     core = [d for d in core_list
-            if len(d.split(".")[0]) <= CORE_NAME_LEN or d in {registrable(x) for x in majors + extras}]
+            if len(d.split(".")[0]) <= CORE_NAME_LEN
+            or d in {registrable(x) for x in majors + extras}]
     core = sorted(set(core))[:MAX_CORE]
     core = sorted(core)
 
     DATA.mkdir(parents=True, exist_ok=True)
     (DATA / "blocklist_full.txt").write_text(
-        "# JustGivenUp! full blocklist -- generated by scripts/build_blocklist.py\n"
-        f"# source: StevenBlack/hosts alternates/porn + curated extras\n"
+        "# JustGivenUp! full blocklist -- generated by "
+        "scripts/build_blocklist.py\n"
+        "# source: StevenBlack/hosts alternates/porn + curated extras\n"
         f"# domains: {len(full)}\n"
         + "\n".join(sorted(full)) + "\n",
         encoding="utf-8",
@@ -282,20 +311,23 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    rules_out_firefox = (ROOT / "extension" / "rules.firefox.json")
     rules = build_rules(core)
     rules_firefox = build_rules(core, for_firefox=True)
     RULES_OUT.parent.mkdir(parents=True, exist_ok=True)
-    RULES_OUT.write_text(json.dumps(rules, ensure_ascii=False, separators=(",", ":")),
+    RULES_OUT.write_text(json.dumps(rules, ensure_ascii=False,
+                                    separators=(",", ":")),
                          encoding="utf-8")
-    rules_out_firefox.write_text(
-        json.dumps(rules_firefox, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8")
+    RULES_OUT_FF.write_text(json.dumps(rules_firefox, ensure_ascii=False,
+                                       separators=(",", ":")),
+                            encoding="utf-8")
 
     print(f"full : {len(full)} domains -> data/blocklist_full.txt")
     print(f"core : {len(core)} domains -> data/blocklist_core.txt")
     print(f"rules: {len(rules)} DNR rules -> extension/rules.json "
           f"({RULES_OUT.stat().st_size // 1024} KB)")
+    print(f"rules: {len(rules_firefox)} DNR rules -> "
+          f"extension/rules.firefox.json "
+          f"({RULES_OUT_FF.stat().st_size // 1024} KB)")
     return 0
 
 

@@ -1,6 +1,6 @@
 # JustGivenUp! core blocklist (policy + extension tier)
 # registrable domains, heuristic: first label <= 6 chars
-# domains: 12220
+# domains: 12167
 00000.uno
 00fun.com
 00go.com
@@ -959,7 +959,6 @@ adnsx.com
 adnxs.com
 adnxtr.com
 adnz.co
-adobe.com
 adobee.com
 adolf.tv
 adone.com
@@ -1255,11 +1254,6 @@ alzy.fr
 am11.ru
 am15.net
 aman.ml
-amazon.co.jp
-amazon.com
-amazon.de
-amazon.dev
-amazon.it
 amcdn.vn
 amd.com
 amdar.wtf
@@ -1323,7 +1317,6 @@ anidex.info
 anifap.top
 anifre.com
 anilos.com
-animehitai.com
 animi2.com
 anix.moe
 ankasa.pl
@@ -1339,7 +1332,6 @@ ans7tv.net
 anstv.net
 ant.com
 antfa.link
-antifa.co.at
 ants.vn
 anurea.shop
 anvato.net
@@ -1408,8 +1400,6 @@ appia.com
 appie.com
 appier.mobi
 appier.net
-apple.com
-apple.com.cn
 applez.fr
 applvn.com
 appota.com
@@ -1546,7 +1536,6 @@ atomex.net
 atovia.shop
 atp.vn
 atrl.co
-att.com
 attire.com.pl
 attn.tv
 attone.co.jp
@@ -1739,7 +1728,6 @@ bb3u9.com
 bb59.ru
 bbb.org
 bbbh.com
-bbc.co.uk
 bbc.com
 bbchat.tv
 bbchoe.com
@@ -1797,7 +1785,6 @@ beeg.asia
 beeg.beauty
 beeg.cfd
 beeg.christmas
-beeg.co.hu
 beeg.com
 beeg.company
 beeg.date
@@ -1941,7 +1928,6 @@ biscom.net
 bisrv.com
 bisvir.ru
 bit-iq.co
-bitchesgirls.com
 bitrix.info
 biz.id
 biz.nf
@@ -2106,7 +2092,6 @@ bryci.com
 bs.direct
 bsex.co.il
 bstats.org
-bt.com
 btanas.shop
 btansa.shop
 btansi.shop
@@ -2504,9 +2489,6 @@ cnet.com
 cneteu.net
 cnhv.co
 cnixon.com
-cnn.cm
-cnn.com
-cnn.io
 cnnd.vn
 cnnews.fr
 cnngo.com
@@ -2525,6 +2507,7 @@ cnxx.me
 cnxx.org
 cnzz.com
 cnzz.net
+co.at
 co.bw
 co.bz
 co.cc
@@ -2532,7 +2515,10 @@ co.com
 co.cr
 co.cu
 co.cz
+co.hu
+co.ke
 co.nl
+co.no
 co.pl
 co.ro
 co.ua
@@ -2555,8 +2541,14 @@ com-b4.info
 com-br.site
 com.asus
 com.com
+com.de
 com.home
 com.in
+com.kz
+com.mt
+com.pt
+com.ro
+com.se
 com.totolink
 com1.ru
 comcen.com.au
@@ -3078,7 +3070,6 @@ dz3gzm.sbs
 dz8qbe.qpon
 dzxcq.com
 dzzzsc.com
-e-hentai.org
 e-kei.pl
 e-kern.fr
 e-kino.tv
@@ -3104,7 +3095,6 @@ ebalka.video
 ebanza.ru
 ebarus.me
 ebasex.top
-ebay.com
 ebdr2.com
 ebdr3.com
 ebis.ne.jp
@@ -3378,7 +3368,6 @@ exe.bid
 execpc.com
 exeos.ws
 exgf.party
-exhentai.org
 exhub.dk
 exit76.com
 exl.io
@@ -3485,7 +3474,6 @@ fappic.com
 faps.club
 fapset.com
 fapsrc.com
-fapster.com
 faptag.com
 faptor.com
 faptv.com
@@ -3676,7 +3664,6 @@ fooxy.com
 fooyoh.com
 foporn.com
 fora.pl
-forbes.com
 forbes.net
 force9.co.uk
 forced.love
@@ -4049,7 +4036,6 @@ girls.pm
 girlss.me
 girlxx.net
 githb.co
-github.io
 gitiho.com
 gitlab.io
 gits.net.th
@@ -4120,17 +4106,6 @@ gonzo.com
 gonzoxxx.com
 goo.ne.jp
 goobbe.com
-google.be
-google.ca
-google.co.in
-google.co.jp
-google.co.za
-google.com
-google.com.au
-google.com.mt
-google.com.vn
-google.cz
-google.nl
 gooxh.life
 gop1.co
 gopeds.com
@@ -4244,7 +4219,6 @@ hanime.com
 hanime.me
 hanime.red
 hanime.tv
-hanime.video
 hanime.watch
 hanime.xxx
 hanime.xyz
@@ -4426,9 +4400,6 @@ hentai.to
 hentai.tv
 hentai.video
 hentai.xxx
-hentaigasm.com
-hentaihaven.xxx
-hentaistream.xxx
 hentau.xyz
 heo3x.net
 heo68.xyz
@@ -4796,7 +4767,6 @@ icheck.com.vn
 ichgcp.com
 ichiav.com
 ichlnk.com
-icloud.com
 iclsas.com
 ico.re
 icons8.com
@@ -4876,7 +4846,6 @@ im.cz
 im9.eu
 imacdn.com
 imagefap.com
-imagepornhub.com
 imake.porn
 imedia.cz
 imeem.com
@@ -6242,7 +6211,6 @@ meteon.org
 metric.vn
 metrix.ir
 metro.co.uk
-metro.com.kz
 metrx.fr
 metu.vn
 metube.me
@@ -6282,7 +6250,6 @@ mikle.com
 mikopi.com
 mikras.nl
 milf.cafe
-milf.co.hu
 milf.dk
 milf.gallery
 milf.plus
@@ -6531,7 +6498,6 @@ ms-ads.co
 ms-mvp.org
 ms10be.be
 msads.net
-msculpin.com
 msecn.net
 msecnd.net
 msedge.net
@@ -6737,7 +6703,6 @@ neekha.com
 neio.online
 neio.shop
 neki.org
-nekopoi.care
 nekyda.com
 nemori.shop
 nemyda.com
@@ -7210,7 +7175,6 @@ online.net
 only40.com
 onlybj.co.uk
 onlyfans.com
-onlyporns.com
 onmpeg.com
 onmypc.net
 onnemr.icu
@@ -7389,7 +7353,6 @@ pawn.se
 paxnet.co.kr
 pay2me.pl
 payn.me
-paypal.com
 paytel.fr
 pbnet.ru
 pbteen.com
@@ -7500,7 +7463,6 @@ phuphi.com
 phym18.com
 pianka.shop
 piano.io
-pic.xxx
 picez.ru
 picmir.me
 pics-x.com
@@ -7733,7 +7695,6 @@ pornez.net
 pornez.pro
 pornez.site
 pornf.org
-porngem.com
 porngo.bond
 porngo.click
 porngo.com
@@ -7802,7 +7763,6 @@ pornn.co
 pornn.me
 porno.bond
 porno.boutique
-porno.co.hu
 porno.com
 porno.coupons
 porno.cymru
@@ -7835,7 +7795,6 @@ pornone.com
 pornos.gold
 pornos.to
 pornot.cz
-pornototale.com
 pornov.ro
 pornox.hu
 pornox.me
@@ -8264,8 +8223,6 @@ recoco.it
 recu.me
 red.xxx
 redd.tube
-reddit.com
-reddit.rest
 redf.fr
 redgifs.com
 redhat.com
@@ -8317,7 +8274,6 @@ res.in
 reson8.com
 ressp.net
 resu.io
-retrak.co.ke
 reuni.eu
 rev.iq
 rever.vn
@@ -8380,7 +8336,6 @@ ro89.com
 roar.com
 rob3rt.online
 robeco.com
-roblox.com
 rock.porn
 rocks.io
 rohea.com
@@ -9109,8 +9064,6 @@ soma.im
 somd.com
 sonobi.com
 sonos.com
-sony.com
-sony.jp
 soom.la
 sopki.com
 soraad.jp
@@ -9372,7 +9325,6 @@ taps.io
 tarego.com
 targad.de
 target.cm
-target.com
 tasapa.digital
 taxel.jp
 taxi69.com
@@ -10966,7 +10918,6 @@ xf.cz
 xfapix.com
 xfeed.com
 xfig.net
-xfinityporn.com
 xfobo.com
 xfree.com
 xfudi.com
@@ -11176,10 +11127,8 @@ xnxx.click
 xnxx.club
 xnxx.cm
 xnxx.co
-xnxx.co.hu
 xnxx.college
 xnxx.com
-xnxx.com.se
 xnxx.cyou
 xnxx.dance
 xnxx.de
@@ -11632,9 +11581,7 @@ xxx-hd.biz
 xxx-hd.com
 xxx-r.com
 xxx.asus
-xxx.co.hu
 xxx.com
-xxx.com.ro
 xxx.hair
 xxx.home
 xxx.observer
