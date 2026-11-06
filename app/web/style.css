@@ -270,6 +270,20 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 #changelog ul { padding-inline-start: 20px; margin-top: 6px; color: #cfd6e4; }
 #changelog .cldate { color: var(--muted); font-size: 12px; }
 
+/* update banner */
+.update-banner {
+  background: rgba(76, 195, 138, .12);
+  border: 1px solid rgba(76, 195, 138, .4);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.update-banner span { color: var(--text); font-size: 13px; }
+
 /* ————————————————— responsive ————————————————— */
 @media (max-width: 860px) {
   .sidebar {
