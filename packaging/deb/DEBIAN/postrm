@@ -1,0 +1,26 @@
+#!/bin/sh
+# postrm — only from an actual purge do we tear down policies/state.
+# NOTE: prerm already REFUSES removal while a lock is active, so when we
+# reach this script the lock (if any) has expired.
+set -e
+
+case "$1" in
+  purge)
+    # clean up the hosts/DNS block if the daemon is gone
+    if [ -f /usr/lib/justgivenup/justgivenup/hooks/install_policies.py ]; then
+        /usr/bin/python3 /usr/lib/justgivenup/justgivenup/hooks/install_policies.py remove || true
+    fi
+    rm -rf /var/lib/justgivenup /etc/justgivenup
+    ;;
+  remove)
+    # keep state on plain `remove` (user may reinstall); only stop services
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl disable --now justgivenup.service || true
+        systemctl disable --now justgivenup-watchdog.timer || true
+    fi
+    ;;
+  upgrade)
+    ;;
+esac
+
+exit 0

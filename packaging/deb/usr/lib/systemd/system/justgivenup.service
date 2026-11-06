@@ -1,0 +1,18 @@
+[Unit]
+Description=JustGivenUp Guardian — porn blocker with an irreversible time-lock
+ Documentation=https://github.com/RaGAEIDOS/justgivenup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/justgivenup run
+Restart=always
+RestartSec=3
+# The daemon binds only to 127.0.0.1; it needs root only for the hosts/DNS
+# layer and for the machine-key mirror file.
+NoNewPrivileges=false
+WorkingDirectory=/root
+
+[Install]
+WantedBy=multi-user.target

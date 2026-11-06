@@ -1,6 +1,13 @@
 # Build output
 build/
 release/
+dist/
+site-build/
+
+# Generated caches
+scripts/.cache/
+*.xpi
+*.zip
 
 # Python leftovers (removed)
 __pycache__/

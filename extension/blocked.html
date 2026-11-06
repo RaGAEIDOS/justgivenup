@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JustGivenUp! — محظور</title>
+<style>
+  :root {
+    --bg: #0e1015; --card: #171b24; --text: #e8ebf3; --muted: #96a0b5;
+    --accent: #4cc38a; --danger: #e5484d; --border: #262c3a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(1200px 600px at 50% -10%, #1a2130 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .wrap { max-width: 560px; width: 100%; text-align: center; }
+  img.logo { width: 96px; height: 96px; margin-bottom: 18px; filter: drop-shadow(0 8px 24px rgba(76,195,138,.25)); }
+  h1 { font-size: 42px; letter-spacing: .5px; margin-bottom: 10px; color: var(--danger); }
+  p.lead { font-size: 17px; line-height: 1.8; color: #cfd6e4; margin-bottom: 18px; }
+  .quote {
+    background: rgba(76,195,138,.08); border: 1px solid rgba(76,195,138,.25);
+    border-radius: 12px; padding: 14px 18px; font-size: 15px; line-height: 1.9;
+    margin-bottom: 20px;
+  }
+  .countdown {
+    display: flex; justify-content: center; gap: 14px; margin-bottom: 8px; direction: ltr;
+  }
+  .unit { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 6px; min-width: 76px; }
+  .unit b { display: block; font-size: 28px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .unit span { font-size: 11px; color: var(--muted); }
+  .until { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+  .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 22px; border-radius: 10px; font-size: 15px; text-decoration: none;
+    background: var(--card); color: var(--text); border: 1px solid var(--border);
+    transition: transform .1s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--accent); color: #0b1310; border-color: transparent; font-weight: 700; }
+  .note { margin-top: 18px; font-size: 12px; color: var(--muted); }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #0b1310; font-weight: 700;
+    padding: 10px 18px; border-radius: 999px; font-size: 13px;
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+  }
+  .toast.show { opacity: 1; }
+  .nolock { color: #ffb45c; font-size: 13px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img class="logo" src="icons/icon128.png" alt="JustGivenUp">
+    <h1 id="title">قف.</h1>
+    <p class="lead" id="body">الموقع ده محظور.</p>
+    <div class="quote" id="quote"></div>
+
+    <div id="lock-block" hidden>
+      <div class="countdown">
+        <div class="unit"><b id="cd-d">0</b><span id="lbl-d">day</span></div>
+        <div class="unit"><b id="cd-h">00</b><span id="lbl-h">hr</span></div>
+        <div class="unit"><b id="cd-m">00</b><span id="lbl-m">min</span></div>
+        <div class="unit"><b id="cd-s">00</b><span id="lbl-s">sec</span></div>
+      </div>
+      <p class="until" id="until-label"></p>
+    </div>
+
+    <p class="nolock" id="nolock-note" hidden></p>
+
+    <p class="note" id="advice"></p>
+
+    <div class="actions">
+      <button class="btn" id="back-btn">رجوع</button>
+      <a class="btn primary" id="dash-btn" href="http://127.0.0.1:8081" target="_blank">لوحة التحكم</a>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script src="i18n.js"></script>
+  <script src="blocked.js"></script>
+</body>
+</html>

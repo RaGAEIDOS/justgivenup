@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "JustGivenUp! Guardian",
+  "version": "3.0.0",
+  "description": "Blocks adult sites with an irreversible time-lock and keeps your recovery streak in sync with the local dashboard. يحجب المواقع الإباحية بقفل زمني لا يمكن إيقافه.",
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://127.0.0.1:8081/*",
+    "http://localhost:8081/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "JustGivenUp! Guardian",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "adult_blocklist",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "incognito": "spanning",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "justgivenup@ragaeidos.github.io",
+      "strict_min_version": "115.0"
+    }
+  }
+}

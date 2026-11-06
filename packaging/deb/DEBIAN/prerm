@@ -1,0 +1,38 @@
+#!/bin/sh
+# prerm — REFUSE removal while a time-lock is active.
+set -e
+
+case "$1" in
+  remove|deconfigure)
+    for lockfile in /var/lib/justgivenup/lock.json /etc/justgivenup/lock.json; do
+        if [ -f "$lockfile" ]; then
+            until=$(python3 - <<PYEOF
+import json, sys, time
+try:
+    with open("$lockfile") as fh:
+        data = json.load(fh)
+    until = int(data.get("until") or 0)
+except Exception:
+    until = 1
+print(until)
+PYEOF
+) || until=1
+            now=$(date +%s)
+            if [ "${until:-0}" -gt "$now" ]; then
+                echo "" >&2
+                echo "justgivenup: The time-lock is ACTIVE until $(date -d "@$until" 2>/dev/null || echo "?")." >&2
+                echo "Removing the package is REFUSED until the lock expires." >&2
+                echo "This is by design — nobody can uninstall the blocker" >&2
+                echo "before the chosen duration ends." >&2
+                echo "" >&2
+                exit 1
+            fi
+        fi
+    done
+    ;;
+  upgrade)
+    # keep state and lock across upgrades
+    ;;
+esac
+
+exit 0

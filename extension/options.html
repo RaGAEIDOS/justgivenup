@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>JustGivenUp! Guardian — Options</title>
+<style>
+  :root {
+    --bg: #0e1015; --card: #171b24; --text: #e8ebf3; --muted: #96a0b5;
+    --accent: #4cc38a; --danger: #e5484d; --border: #262c3a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); padding: 40px 20px;
+    font-family: "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif;
+    display: flex; justify-content: center;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px; max-width: 620px; width: 100%;
+  }
+  header { display: flex; gap: 14px; align-items: center; margin-bottom: 20px; }
+  h1 { font-size: 20px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .row {
+    display: flex; justify-content: space-between; padding: 10px 12px;
+    background: rgba(255,255,255,.03); border-radius: 8px; margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .row b { color: var(--accent); }
+  .row b.bad { color: var(--danger); }
+  p.info { font-size: 13px; color: var(--muted); line-height: 1.8; margin-top: 14px; }
+  code { background: #10131a; border: 1px solid var(--border); padding: 2px 6px; border-radius: 5px; font-size: 12px; }
+  a.btn {
+    display: inline-block; margin-top: 18px; padding: 10px 18px;
+    background: var(--accent); color: #0b1310; font-weight: 700;
+    border-radius: 10px; text-decoration: none;
+  }
+  .lockbanner {
+    background: rgba(229,72,77,.12); border: 1px solid rgba(229,72,77,.4);
+    border-radius: 10px; padding: 12px; margin-bottom: 16px;
+    font-size: 14px; color: #ff9b9e;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <header>
+      <img src="icons/icon128.png" width="56" height="56" alt="">
+      <div>
+        <h1>JustGivenUp! Guardian</h1>
+        <div class="sub" id="sub">…</div>
+      </div>
+    </header>
+
+    <div class="lockbanner" id="lock-banner" hidden></div>
+
+    <div class="row"><span id="l-status">Status</span><b id="v-status">…</b></div>
+    <div class="row"><span id="l-lock">Time-lock</span><b id="v-lock">…</b></div>
+    <div class="row"><span id="l-streak">Clean streak</span><b id="v-streak">…</b></div>
+    <div class="row"><span id="l-blocked">Blocked attempts</span><b id="v-blocked">…</b></div>
+    <div class="row"><span id="l-rules">Static rules</span><b id="v-rules">…</b></div>
+
+    <p class="info" id="info-text"></p>
+
+    <a class="btn" id="dash" href="http://127.0.0.1:8081" target="_blank">Dashboard</a>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

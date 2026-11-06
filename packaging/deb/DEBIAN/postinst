@@ -1,0 +1,43 @@
+#!/bin/sh
+# postinst — enable autostart at boot, create state dirs, install policies
+set -e
+
+case "$1" in
+  configure)
+    # state + mirror directories (the lock lives here, root-only)
+    mkdir -p /var/lib/justgivenup
+    chmod 0755 /var/lib/justgivenup || true
+    mkdir -p /etc/justgivenup
+    chmod 0700 /etc/justgivenup || true
+
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl daemon-reload || true
+        systemctl enable --now justgivenup.service || true
+        systemctl enable --now justgivenup-watchdog.timer || true
+    fi
+
+    # browser enterprise policies (URLBlocklist) — best effort, never fatal
+    if [ -x /usr/bin/python3 ]; then
+        /usr/bin/python3 /usr/lib/justgivenup/justgivenup/hooks/install_policies.py install || true
+    fi
+
+    cat <<'EOF'
+
+  JustGivenUp! Guardian installed.
+
+  1. The service is enabled and will start at every boot.
+  2. Open the dashboard:   http://127.0.0.1:8081
+  3. Install the browser extension (optional but recommended):
+       Chrome / Edge / Brave : chrome://extensions → Developer mode →
+                               Load unpacked → /usr/lib/justgivenup/justgivenup/extension
+       Firefox               : about:addons → Install Add-on From File →
+                               /usr/lib/justgivenup/justgivenup/extension/justgivenup.xpi
+
+  Set the time-lock (30 days example) from the dashboard's Lock tab,
+  or the terminal:   sudo justgivenup lock --days 30
+
+EOF
+    ;;
+esac
+
+exit 0

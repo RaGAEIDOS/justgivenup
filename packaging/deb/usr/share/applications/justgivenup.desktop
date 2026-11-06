@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=JustGivenUp! Guardian
+GenericName=Dashboard
+Comment=Local dashboard of the JustGivenUp! porn blocker with time-lock
+Keywords=blocker;guardian;porn;block;lock;dashboard;
+Exec=sh -c 'xdg-open http://127.0.0.1:8081 2>/dev/null || sensible-browser http://127.0.0.1:8081 2>/dev/null || firefox http://127.0.0.1:8081 2>/dev/null || xdg-open http://127.0.0.1:8081'
+Icon=justgivenup
+Terminal=false
+Categories=Utility;
+StartupNotify=false

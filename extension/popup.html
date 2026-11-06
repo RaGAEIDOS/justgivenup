@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>JustGivenUp! Guardian</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon48.png" alt="" width="32" height="32">
+    <div class="hdr-text">
+      <h1>JustGivenUp!</h1>
+      <span id="pill" class="pill">…</span>
+    </div>
+  </header>
+
+  <section id="server-down" class="card danger" hidden>
+    <p id="down-msg">الخدمة المحلية مش شغالة.</p>
+    <code>sudo systemctl start justgivenup</code>
+    <p class="muted" id="down-note">الحجب الثابت لسه شغال حتى لو الخدمة وقفت.</p>
+  </section>
+
+  <section id="locked-view" class="card" hidden>
+    <div class="countdown" dir="ltr">
+      <div class="unit"><b id="cd-d">0</b><span id="lbl-d">يوم</span></div>
+      <div class="unit"><b id="cd-h">00</b><span id="lbl-h">ساعة</span></div>
+      <div class="unit"><b id="cd-m">00</b><span id="lbl-m">دقيقة</span></div>
+      <div class="unit"><b id="cd-s">00</b><span id="lbl-s">ثانية</span></div>
+    </div>
+    <p class="until" id="until-label"></p>
+    <p class="quote" id="quote"></p>
+    <p class="lock-note" id="lock-note">القفل شغال — مفيش زرار إيقاف قبل الانتهاء.</p>
+    <a class="btn" id="dash-link" href="http://127.0.0.1:8081" target="_blank">لوحة التحكم</a>
+  </section>
+
+  <section id="unlocked-view" class="card" hidden>
+    <ul class="stats">
+      <li><span id="u-streak-lbl">أيام نظيفة</span><b id="u-streak">0</b></li>
+      <li><span id="u-blocked-lbl">محظور</span><b id="u-blocked">0</b></li>
+      <li><span id="u-relapse-lbl">انتكاسات</span><b id="u-relapse">0</b></li>
+    </ul>
+    <p class="muted" id="unlocked-note">الحماية شغالة. مفيش قفل زمني متفعّل دلوقتي.</p>
+    <a class="btn primary" id="lock-link" href="http://127.0.0.1:8081/#lock">اقفل الآن</a>
+  </section>
+
+  <footer>
+    <span id="ver">v3.0.0</span>
+    <a id="dash-foot" href="http://127.0.0.1:8081" target="_blank">Dashboard</a>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

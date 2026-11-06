@@ -1,0 +1,7 @@
+[Unit]
+Description=JustGivenUp! watchdog — keep the guardian running while a lock is active
+
+[Service]
+Type=oneshot
+# Restart the main service if a lock is active and it was stopped.
+ExecStart=/usr/bin/python3 /usr/lib/justgivenup/justgivenup/hooks/watchdog.py

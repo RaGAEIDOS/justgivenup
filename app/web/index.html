@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JustGivenUp! — لوحة التحكم</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- setup wizard (first run) -->
+  <div id="wizard" class="overlay" hidden>
+    <div class="wizard-card">
+      <img src="logo.png" alt="JustGivenUp" class="wizard-logo">
+      <h1 id="w-title">مرحبًا بك في JustGivenUp!</h1>
+      <p class="muted" id="w-intro">حماية نهائية من الإباحية بقفل زمني لا يمكن إيقافه،
+        ولوحة متابعة لفترة التعافي. خلينا نبدأ.</p>
+
+      <div class="wizard-steps">
+        <div class="wstep">
+          <label id="w-lang-lbl">اللغة / Language</label>
+          <div class="segmented">
+            <button type="button" data-lang="ar" class="seg on">العربية</button>
+            <button type="button" data-lang="en" class="seg">English</button>
+          </div>
+        </div>
+
+        <div class="wstep">
+          <label for="w-name" id="w-name-lbl">اسمك (اختياري)</label>
+          <input id="w-name" type="text" autocomplete="off" placeholder="—">
+        </div>
+
+        <div class="wstep">
+          <label for="w-goal" id="w-goal-lbl">هدفك (اختياري)</label>
+          <input id="w-goal" type="text" autocomplete="off" placeholder="—">
+        </div>
+
+        <div class="wstep">
+          <label for="w-days" id="w-days-lbl">مدة القفل الأولية بالأيام (0 = بدون قفل)</label>
+          <input id="w-days" type="number" min="0" max="3650" value="30">
+        </div>
+
+        <div class="wstep check">
+          <label><input id="w-autostart" type="checkbox" checked>
+            <span id="w-autostart-lbl">التشغيل التلقائي مع فتح النظام</span></label>
+        </div>
+
+        <div class="wstep" id="w-confirm-wrap">
+          <label id="w-confirm-lbl">اكتب اقفل للتأكيد (لا يمكن التراجع)</label>
+          <input id="w-confirm" type="text" autocomplete="off"
+                 placeholder="اقفل">
+        </div>
+      </div>
+
+      <p class="warning" id="w-warning">بمجرد بدء القفل: لا أحد — لا أنت ولا
+        الإكستنشن ولا الأمر — يستطيع إيقافه أو تقصيره. العبث بالملفات يضيف 90 يومًا.</p>
+
+      <button id="w-finish" class="btn primary big">ابدأ الآن</button>
+      <p class="error" id="w-error" hidden></p>
+    </div>
+  </div>
+
+  <!-- main shell -->
+  <div id="app" hidden>
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="logo.png" alt="" width="44" height="44">
+        <div>
+          <b>JustGivenUp!</b>
+          <small id="brand-ver">v3.0.0</small>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item on" data-tab="dashboard" id="nav-dashboard">📊 الرئيسية</button>
+        <button class="nav-item" data-tab="lock" id="nav-lock">🔒 القفل</button>
+        <button class="nav-item" data-tab="motivation" id="nav-motivation">💪 التحفيز</button>
+        <button class="nav-item" data-tab="ranks" id="nav-ranks">🏆 الرتب</button>
+        <button class="nav-item" data-tab="events" id="nav-events">📜 السجل</button>
+        <button class="nav-item" data-tab="settings" id="nav-settings">⚙️ الإعدادات</button>
+      </nav>
+      <div class="sidebar-foot">
+        <span id="side-lock" class="side-lock">—</span>
+        <a href="https://github.com/RaGAEIDOS/justgivenup" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <button class="hamburger" id="hamburger" aria-label="menu">☰</button>
+        <h2 id="tab-title">الرئيسية</h2>
+        <span id="topbar-lock" class="topbar-lock"></span>
+      </header>
+
+      <!-- ── dashboard ───────────────────────────────────────────────── -->
+      <section class="tab-page" id="page-dashboard">
+        <div class="grid cards">
+          <div class="card stat">
+            <span class="stat-label" id="s-streak">أيام نظيفة</span>
+            <b class="stat-big" id="v-streak">0</b>
+            <small class="muted" id="v-streak-long">أطول سلسلة: 0</small>
+          </div>
+          <div class="card stat">
+            <span class="stat-label" id="s-blocked">محاولات محظورة</span>
+            <b class="stat-big" id="v-blocked">0</b>
+            <small class="muted" id="s-blocked-note">من الإكستنشن مباشرة</small>
+          </div>
+          <div class="card stat">
+            <span class="stat-label" id="s-relapse">انتكاسات</span>
+            <b class="stat-big" id="v-relapse">0</b>
+            <small class="muted" id="v-relapse-detail"></small>
+          </div>
+          <div class="card stat">
+            <span class="stat-label" id="s-rank">الرتبة الحالية</span>
+            <b class="stat-big" id="v-rank">—</b>
+            <small class="muted" id="v-rank-next"></small>
+          </div>
+        </div>
+
+        <div class="card hero" id="hero-card" hidden>
+          <div class="hero-countdown" dir="ltr">
+            <div class="unit"><b id="cd-d">0</b><span class="unit-lbl" data-l="day">يوم</span></div>
+            <div class="unit"><b id="cd-h">00</b><span class="unit-lbl" data-l="hour">ساعة</span></div>
+            <div class="unit"><b id="cd-m">00</b><span class="unit-lbl" data-l="min">دقيقة</span></div>
+            <div class="unit"><b id="cd-s">00</b><span class="unit-lbl" data-l="sec">ثانية</span></div>
+          </div>
+          <p class="hero-until" id="hero-until"></p>
+          <div class="progress"><div class="progress-fill" id="hero-progress" style="width:0%"></div></div>
+          <p class="muted" id="hero-note"></p>
+        </div>
+
+        <div class="card quote-card">
+          <h3 id="quote-title">لمة من اليوم</h3>
+          <p class="quote" id="dash-quote">—</p>
+        </div>
+
+        <div class="card">
+          <h3 id="danger-title">لو انزلقت فعلًا</h3>
+          <p class="muted" id="danger-note">الانتكاسة بيانات، مش حكم نهائي. سجّلها بصدق،
+            القفل يفضل في مكانه — وده بالضبط معناه.</p>
+          <div class="row gap">
+            <button class="btn" data-relapse="porn" id="r-porn">أباحية</button>
+            <button class="btn" data-relapse="masturbation" id="r-mast">عادة سرية</button>
+            <button class="btn" data-relapse="both" id="r-both">الاتنين</button>
+          </div>
+          <p class="error" id="relapse-error" hidden></p>
+        </div>
+      </section>
+
+      <!-- ── lock ────────────────────────────────────────────────────── -->
+      <section class="tab-page" id="page-lock" hidden>
+        <div class="card" id="lock-active-card" hidden>
+          <h3>🔒 <span id="lock-active-title">القفل الزمني شغال</span></h3>
+          <div class="hero-countdown" dir="ltr">
+            <div class="unit"><b id="ld-d">0</b><span class="unit-lbl" data-l="day">يوم</span></div>
+            <div class="unit"><b id="ld-h">00</b><span class="unit-lbl" data-l="hour">ساعة</span></div>
+            <div class="unit"><b id="ld-m">00</b><span class="unit-lbl" data-l="min">دقيقة</span></div>
+            <div class="unit"><b id="ld-s">00</b><span class="unit-lbl" data-l="sec">ثانية</span></div>
+          </div>
+          <p class="hero-until" id="lock-until"></p>
+          <ul class="info-list" id="lock-rules">
+            <li>لا يوجد زرار إيقاف — لا هنا ولا بالإكستنشن ولا بالسطر.</li>
+            <li>حذف الإكستنشن أو إطفاؤه أثناء القفل = +90 يوم عقوبة.</li>
+            <li>حجب DNS عبر /etc/hosts يستمر حتى نهاية القفل.</li>
+          </ul>
+          <hr>
+          <h4 id="extend-title">تمديد القفل فقط</h4>
+          <p class="muted" id="extend-note">تستطيع تمديد القفل إلى مدة أطول، ولا تستطيع تقصيره أبدًا.</p>
+          <label class="fld"><span id="extend-days-lbl">مدة جديدة بالأيام</span>
+            <input id="extend-days" type="number" min="1" max="3650" value="90"></label>
+          <label class="fld"><span id="confirm-lbl1">اكتب اقفل للتأكيد</span>
+            <input id="extend-confirm" type="text" autocomplete="off" placeholder="اقفل"></label>
+          <button class="btn primary" id="extend-btn">تفعيل</button>
+          <p class="error" id="extend-error" hidden></p>
+        </div>
+
+        <div class="card" id="lock-create-card" hidden>
+          <h3 id="create-title">إنشاء قفل زمني</h3>
+          <div class="row gap presets">
+            <button class="btn preset" data-days="7">7 <span data-l="day">يوم</span></button>
+            <button class="btn preset" data-days="30">30</button>
+            <button class="btn preset" data-days="90">90</button>
+            <button class="btn preset" data-days="365">365</button>
+          </div>
+          <label class="fld"><span id="create-days-lbl">المدة بالأيام</span>
+            <input id="create-days" type="number" min="1" max="3650" value="30"></label>
+          <label class="fld"><span id="confirm-lbl2">اكتب اقفل للتأكيد</span>
+            <input id="create-confirm" type="text" autocomplete="off" placeholder="اقفل"></label>
+          <p class="warning" id="create-warning">بمجرد بدء القفل: لا أحد يستطيع إيقافه أو تقصيره.
+            العبث بملفات القفل يضيف 90 يومًا.</p>
+          <button class="btn primary big" id="create-btn">🔒 اقفل الآن</button>
+          <p class="error" id="create-error" hidden></p>
+        </div>
+      </section>
+
+      <!-- ── motivation ──────────────────────────────────────────────── -->
+      <section class="tab-page" id="page-motivation" hidden>
+        <div class="card quote-card">
+          <h3 id="mot-quote-title">لمة من اليوم</h3>
+          <p class="quote" id="mot-quote">—</p>
+        </div>
+        <div class="card">
+          <h3 id="mot-benefits-title">ما الذي يقال عن التعافي؟</h3>
+          <ol class="benefits" id="benefits-list"></ol>
+          <p class="muted" id="benefits-disclaimer"></p>
+        </div>
+        <div class="card">
+          <h3 id="mot-notes-title">ملاحظات ثابتة</h3>
+          <ul class="info-list" id="notes-list"></ul>
+        </div>
+      </section>
+
+      <!-- ── ranks ───────────────────────────────────────────────────── -->
+      <section class="tab-page" id="page-ranks" hidden>
+        <div class="card">
+          <h3 id="ranks-title">رتب التعافي</h3>
+          <p class="muted" id="ranks-note"></p>
+          <div class="ranks" id="ranks-grid"></div>
+        </div>
+      </section>
+
+      <!-- ── events ──────────────────────────────────────────────────── -->
+      <section class="tab-page" id="page-events" hidden>
+        <div class="card">
+          <h3 id="events-title">سجل النشاط</h3>
+          <div class="events" id="events-list"></div>
+        </div>
+      </section>
+
+      <!-- ── settings ────────────────────────────────────────────────── -->
+      <section class="tab-page" id="page-settings" hidden>
+        <div class="card">
+          <h3 id="set-profile-title">الملف الشخصي</h3>
+          <label class="fld"><span id="set-name-lbl">الاسم</span>
+            <input id="set-name" type="text" autocomplete="off"></label>
+          <label class="fld"><span id="set-goal-lbl">الهدف</span>
+            <input id="set-goal" type="text" autocomplete="off"></label>
+          <label class="fld"><span id="set-lang-lbl">اللغة</span>
+            <select id="set-lang"><option value="ar">العربية</option><option value="en">English</option></select></label>
+          <button class="btn primary" id="set-save">حفظ</button>
+          <p class="ok" id="set-ok" hidden></p>
+          <p class="error" id="set-error" hidden></p>
+        </div>
+
+        <div class="card">
+          <h3 id="set-sys-title">النظام</h3>
+          <label class="check"><input type="checkbox" id="set-hosts">
+            <span id="set-hosts-lbl">حجب DNS (/etc/hosts) أثناء القفل</span></label>
+          <label class="check"><input type="checkbox" id="set-autostart">
+            <span id="set-autostart-lbl">التشغيل التلقائي مع فتح النظام</span></label>
+          <p class="muted" id="set-sys-note"></p>
+          <button class="btn primary" id="set-sys-save">تطبيق</button>
+          <p class="error" id="set-sys-error" hidden></p>
+          <p class="ok" id="set-sys-ok" hidden></p>
+        </div>
+
+        <div class="card">
+          <h3 id="set-ext-title">الإكستنشن</h3>
+          <div id="ext-state" class="muted">…</div>
+          <p class="muted" id="ext-hint"></p>
+          <div class="row gap">
+            <button class="btn" id="ext-copy">نسخ مسار الإكستنشن</button>
+            <a class="btn" href="http://127.0.0.1:8081/api/extension" target="_blank" rel="noopener">JSON</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 id="set-block-title">نطاقات إضافية</h3>
+          <div class="row gap">
+            <input id="custom-domain" type="text" dir="ltr" placeholder="example.com">
+            <button class="btn" id="custom-add">إضافة</button>
+          </div>
+          <ul class="info-list mono" id="custom-list"></ul>
+          <p class="error" id="custom-error" hidden></p>
+        </div>
+
+        <div class="card">
+          <h3 id="set-changelog-title">ما الجديد</h3>
+          <div id="changelog"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
