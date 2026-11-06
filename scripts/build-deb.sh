@@ -32,6 +32,8 @@ mkdir -p "$XPI_TMP"
 cp -a extension/. "$XPI_TMP/"
 cp extension/manifest.firefox.json "$XPI_TMP/manifest.json"
 rm -f "$XPI_TMP/manifest.firefox.json"
+cp extension/rules.firefox.json "$XPI_TMP/rules.json"
+rm -f "$XPI_TMP/rules.firefox.json"
 (cd "$XPI_TMP" && zip -qr "$PKG/extension/justgivenup.xpi" .)
 rm -rf "$XPI_TMP"
 cp data/blocklist_full.txt data/blocklist_core.txt "$PKG/data/"

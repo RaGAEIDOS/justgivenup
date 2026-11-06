@@ -159,26 +159,7 @@ def valid_domain(d: str) -> bool:
     return "." in d and re.fullmatch(r"[a-z0-9._-]+", d) is not None
 
 
-def build_rules(core: list[str]) -> list[dict]:
-    blocked_types = [
-        "sub_frame", "stylesheet", "script", "image", "font", "object",
-        "xmlhttprequest", "media", "websocket", "webtransport", "webbundle",
-        "ping", "other",
-    ]
-    rules = [
-        {
-            "id": 1,
-            "priority": 1,
-            "action": {"type": "redirect",
-                       "redirect": {"extensionPath": "/blocked.html"}},
-            "condition": {"requestDomains": core, "resourceTypes": ["main_frame"]},
-        },
-        {
-            "id": 2,
-            "priority": 1,
-            "action": {"type": "block"},
-            "condition": {"requestDomains": core, "resourceTypes": blocked_types},
-        },
+SAFE_SEARCH_RULES = [
         # ---- Safe Search hardening (search engines only) ----
         {
             "id": 10,
@@ -217,6 +198,36 @@ def build_rules(core: list[str]) -> list[dict]:
                           "resourceTypes": ["main_frame"]},
         },
     ]
+
+
+def build_rules(core: list[str], for_firefox: bool = False) -> list[dict]:
+    # NOTE: resource types must be valid in BOTH Chrome MV3 and Firefox MV3.
+    # "webtransport"/"webbundle"/"object" are Chrome-only and made Firefox
+    # reject the whole file (silently). Safe subset below.
+    blocked_types = [
+        "sub_frame", "stylesheet", "script", "image", "font",
+        "xmlhttprequest", "media", "websocket", "ping", "other",
+    ]
+    rules = [
+        {
+            "id": 1,
+            "priority": 1,
+            "action": {"type": "redirect",
+                       "redirect": {"extensionPath": "/blocked.html"}},
+            "condition": {"requestDomains": core, "resourceTypes": ["main_frame"]},
+        },
+        {
+            "id": 2,
+            "priority": 1,
+            "action": {"type": "block"},
+            "condition": {"requestDomains": core, "resourceTypes": blocked_types},
+        },
+    ]
+    # Firefox DNR 115+ rejects the whole SET if any rule uses `transform`
+    # (unsupported) — dropping the safe-search rules there is what makes
+    # the core redirect + block rules apply at all on Firefox.
+    if not for_firefox:
+        rules += SAFE_SEARCH_RULES
     return rules
 
 
@@ -271,10 +282,15 @@ def main() -> int:
         encoding="utf-8",
     )
 
+    rules_out_firefox = (ROOT / "extension" / "rules.firefox.json")
     rules = build_rules(core)
+    rules_firefox = build_rules(core, for_firefox=True)
     RULES_OUT.parent.mkdir(parents=True, exist_ok=True)
     RULES_OUT.write_text(json.dumps(rules, ensure_ascii=False, separators=(",", ":")),
                          encoding="utf-8")
+    rules_out_firefox.write_text(
+        json.dumps(rules_firefox, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8")
 
     print(f"full : {len(full)} domains -> data/blocklist_full.txt")
     print(f"core : {len(core)} domains -> data/blocklist_core.txt")

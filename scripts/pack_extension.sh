@@ -21,6 +21,10 @@ trap 'rm -rf "$TMP"' EXIT
 cp -a extension/. "$TMP/"
 cp extension/manifest.firefox.json "$TMP/manifest.json"
 rm -f "$TMP/manifest.firefox.json"
+# Firefox DNR: ship the firefox-only ruleset (no `transform` rules —
+# Firefox rejects the whole set when one is present)
+cp extension/rules.firefox.json "$TMP/rules.json"
+rm -f "$TMP/rules.firefox.json"
 (cd "$TMP" && zip -qr "$ROOT/$FIREFOX_XPI" .)
 echo "firefox: $FIREFOX_XPI"
 
