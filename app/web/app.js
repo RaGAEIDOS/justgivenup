@@ -59,11 +59,6 @@ const STR = {
     extUpdateBtn: "تحديث الآن",
     extUpToDate: "الإضافة محدثة",
     extUpdateFailed: "فشل فحص التحديث",
-    extUpdateAvailable: "تحديث متاح للإضافة",
-    extUpdateTo: "الإصدار الجديد: {version}",
-    extUpdateBtn: "تحديث الآن",
-    extUpToDate: "الإضافة محدثة",
-    extUpdateFailed: "فشل فحص التحديث",
     eventsTypes: {
       service_start: "بدأت الخدمة", service_stop: "وقفت الخدمة",
       lock_created: "قفل جديد", lock_expired: "انتهى القفل",
@@ -115,11 +110,6 @@ const STR = {
     blockTitle: "Custom domains",
     add: "Add",
     changelogTitle: "What's new",
-    extUpdateAvailable: "Extension update available",
-    extUpdateTo: "New version: {version}",
-    extUpdateBtn: "Update now",
-    extUpToDate: "Extension is up to date",
-    extUpdateFailed: "Update check failed",
     extUpdateAvailable: "Extension update available",
     extUpdateTo: "New version: {version}",
     extUpdateBtn: "Update now",
@@ -476,8 +466,13 @@ async function checkExtensionUpdate() {
       msg.textContent = t("extUpdateAvailable") + " — " + t("extUpdateTo").replace("{version}", latest);
       btn.textContent = t("extUpdateBtn");
       btn.onclick = () => {
-        chrome?.runtime?.reload?.() ? chrome.runtime.reload() :
-          (open("chrome://extensions") || open("edge://extensions") || open("about:addons"));
+        if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.reload) {
+          chrome.runtime.reload();
+        } else {
+          window.open("chrome://extensions");
+          window.open("edge://extensions");
+          window.open("about:addons");
+        }
       };
     } else {
       banner.hidden = false;
@@ -495,63 +490,6 @@ async function checkExtensionUpdate() {
     console.warn("extension update check failed", e);
   }
 }
-
-/* ------------------------------------------------------------------ */
-/* Extension auto-update check                                        */
-/* ------------------------------------------------------------------ */
-let extUpdateChecked = false;
-
-async function checkExtensionUpdate() {
-  if (extUpdateChecked) return;
-  extUpdateChecked = true;
-
-  const banner = $("ext-update");
-  const msg = $("ext-update-msg");
-  const btn = $("ext-update-btn");
-  if (!banner || !msg || !btn) return;
-
-  try {
-    const res = await fetch("https://raw.githubusercontent.com/RaGAEIDOS/justgivenup/main/extension/manifest.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const manifest = await res.json();
-    const latest = manifest.version || "0.0.0";
-    const current = (S.extension && S.extension.version) || "0.0.0";
-
-    const curParts = current.split(".").map(Number);
-    const newParts = latest.split(".").map(Number);
-    let newer = false;
-    for (let i = 0; i < Math.max(curParts.length, newParts.length); i++) {
-      const a = curParts[i] || 0;
-      const b = newParts[i] || 0;
-      if (b > a) { newer = true; break; }
-      if (a > b) break;
-    }
-
-    if (newer) {
-      banner.hidden = false;
-      msg.textContent = t("extUpdateAvailable") + " — " + t("extUpdateTo").replace("{version}", latest);
-      btn.textContent = t("extUpdateBtn");
-      btn.onclick = () => {
-        chrome?.runtime?.reload?.() ? chrome.runtime.reload() :
-          (open("chrome://extensions") || open("edge://extensions") || open("about:addons"));
-      };
-    } else {
-      banner.hidden = false;
-      banner.style.background = "rgba(100, 100, 100, .12)";
-      banner.style.borderColor = "rgba(100, 100, 100, .3)";
-      msg.textContent = t("extUpToDate");
-      btn.hidden = true;
-    }
-  } catch (e) {
-    banner.hidden = false;
-    banner.style.background = "rgba(229, 72, 77, .12)";
-    banner.style.borderColor = "rgba(229, 72, 77, .4)";
-    msg.textContent = t("extUpdateFailed");
-    btn.hidden = true;
-    console.warn("extension update check failed", e);
-  }
-}
-
 
 /* ------------------------------------------------------------------ */
 /* actions                                                             */
