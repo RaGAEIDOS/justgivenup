@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JustGivenUp! Guardian — احمِ نفسك</title>
+<style>
+  :root{--bg:#0e1015;--card:#171b24;--text:#e8ebf3;--muted:#96a0b5;--accent:#4cc38a;--danger:#e5484d;--border:#242b3a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1100px 600px at 50% -10%,#1a2130 0%,var(--bg) 60%);color:var(--text);font-family:"Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;line-height:1.75}
+  .wrap{max-width:880px;margin:0 auto;padding:28px 20px 60px}
+  .hero{text-align:center;padding:42px 10px 22px}
+  .hero h1{font-size:44px;line-height:1.25}
+  body[dir=ltr] .hero h1{letter-spacing:.5px}
+  .tag{color:var(--muted);font-size:18px;margin-top:10px}
+  .hero .logo{width:110px;height:110px;border-radius:22px;box-shadow:0 14px 40px rgba(76,195,138,.22)}
+  .badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+  .badge{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:5px 13px;font-size:12.5px;color:var(--muted)}
+  section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:18px}
+  h2{font-size:22px;margin-bottom:10px}
+  h2 .emoji{font-size:22px}
+  .lang-toggle{display:flex;justify-content:center;gap:8px;margin-top:20px}
+  .lang-toggle button{background:var(--card);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:6px 16px;cursor:pointer;font:inherit}
+  .lang-toggle button.on{background:var(--accent);color:#0b1310;font-weight:700}
+  code,pre{font-family:"Cascadia Code",Consolas,monospace}
+  pre{background:#0b0e13;border:1px solid var(--border);border-radius:12px;padding:14px;overflow-x:auto;direction:ltr;text-align:left;font-size:13px;line-height:1.7}
+  .cmd{position:relative}
+  .cmd button{position:absolute;top:8px;inset-inline-end:8px;background:#1d232e;color:var(--muted);border:1px solid var(--border);border-radius:7px;padding:3px 9px;font-size:11px;cursor:pointer}
+  .btn{display:inline-block;background:#1d232e;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 20px;text-decoration:none;font-size:14px;margin:4px}
+  .btn.primary{background:var(--accent);color:#0b1310;font-weight:700;border-color:transparent}
+  .row{display:flex;flex-wrap:wrap;gap:6px}
+  .feat{list-style:none}
+  .feat li{padding:9px 10px;border-bottom:1px solid var(--border)}
+  .feat li:last-child{border-bottom:0}
+  .feat b{color:var(--accent)}
+  .note{background:rgba(255,180,92,.08);border:1px solid rgba(255,180,92,.4);color:#ffb45c;border-radius:10px;padding:10px 14px;font-size:13.5px;margin-top:12px}
+  footer{color:var(--muted);text-align:center;font-size:13px;margin-top:26px}
+  footer a{color:var(--muted)}
+  details{margin-top:12px}
+  summary{cursor:pointer;color:var(--accent);font-weight:600}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <img class="logo" src="https://raw.githubusercontent.com/RaGAEIDOS/justgivenup/main/img/logo-justgivenup.png" alt="JustGivenUp!">
+    <h1>JustGivenUp! Guardian</h1>
+    <p class="tag" id="tagline">احمِ نفسك من الإباحية بقفل زمني لا يمكن إيقافه — وليلة واحدة بدل اليوم القادم.</p>
+    <div class="badge-row">
+      <span class="badge">Chrome · Firefox · Edge · Brave</span>
+      <span class="badge">Windows + Linux</span>
+      <span class="badge">MIT License</span>
+      <span class="badge" id="ver-badge">v3.0.0</span>
+    </div>
+    <div class="lang-toggle">
+      <button type="button" id="lang-ar" class="on">العربية</button>
+      <button type="button" id="lang-en">English</button>
+    </div>
+  </div>
+
+  <!-- install -->
+  <section>
+    <h2><span class="emoji">📥</span> <span id="install-h">التثبيت — Linux (apt)</span></h2>
+    <p id="install-p">سطر واحد يضيف المستودع، ثم ثبّت الحزمة كأنها أي برنامج عادي:</p>
+    <div class="cmd">
+      <pre id="cmd-apt">curl -fsSL https://ragaeidos.website/justgivenup/install.sh | sudo sh
+sudo apt update &amp;&amp; sudo apt install justgivenup</pre>
+      <button type="button" id="copy-apt">نسخ</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" href="https://ragaeidos.website/justgivenup/install.sh" id="dl-script">تنزيل install.sh</a>
+      <a class="btn" href="https://ragaeidos.website/justgivenup/extensions/justgivenup-chrome-3.0.0.zip" id="dl-chrome">إكستنشن Chrome (zip)</a>
+      <a class="btn" href="https://ragaeidos.website/justgivenup/extensions/justgivenup-firefox-3.0.0.xpi" id="dl-ff">إكستنشن Firefox (.xpi)</a>
+    </div>
+    <p class="note" id="install-note">بعد التثبيت افتح http://127.0.0.1:8081 وأكمل المعالج. الخدمة تعمل تلقائيًا مع إقلاع النظام.</p>
+    <details>
+      <summary id="manual-summary">التثبيت يدويًا بدون سكربت</summary>
+      <div class="cmd" style="margin-top:8px">
+        <pre id="cmd-manual">echo "deb [trusted=yes] https://ragaeidos.website/justgivenup stable main" \
+  | sudo tee /etc/apt/sources.list.d/justgivenup.list
+sudo apt update &amp;&amp; sudo apt install justgivenup</pre>
+        <button type="button" id="copy-manual">نسخ</button>
+      </div>
+      <p style="margin-top:8px" id="manual-p">يعمل على Debian وUbuntu وMint والأنظمة المشتقة. الـ signed-release متاح عند توقيع المستودع.</p>
+    </details>
+  </section>
+
+  <!-- features -->
+  <section>
+    <h2><span class="emoji">🛡️</span> <span id="feat-h">كيف يعمل؟</span></h2>
+    <ul class="feat" id="feat-list">
+      <li>🔒 <b>قفل زمني لا يمكن إيقافه</b> — المدة تحدّدها أنت (1–3650 يوم). بمجرد بدئه لا يستطيع أحد — لا أنت ولا الإكستنشن ولا السطر — إزالته أو تقصيره. العبث بالملفات يضيف 90 يومًا.</li>
+      <li>🧩 <b>إكستنشن Chrome وFirefox</b> — يحجب مباشرةً فوق 12,000 موقع إباحي بـ declarativeNetRequest، مع واجهة تحفيزية عند المحاولة.</li>
+      <li>🌐 <b>سياسات متصفحات إجبارية</b> — URLBlocklist يُثبَّت عبر postinst ولا يمكن تعطيله من واجهة المتصفح.</li>
+      <li>📛 <b>حجب DNS على مستوى النظام</b> — /etc/hosts يحجب أكثر من 150,000 نطاق أثناء القفل حتى لو حُذف الإكستنشن.</li>
+      <li>⏰ <b>يعمل دائمًا</b> — خدمة systemd + حارس كل 30 ثانية يعيد التشغيل لو أوُقفت، ويبدأ تلقائيًا مع الإقلاع.</li>
+      <li>📊 <b>لوحة تعافي</b> — أيام نظيفة، انتكاسات، رتب، سجل، كلمات تحفيزية (عربي/إنجليزي).</li>
+    </ul>
+  </section>
+
+  <!-- windows -->
+  <section>
+    <h2><span class="emoji">🪟</span> <span id="win-h">Windows</span></h2>
+    <p id="win-p">نفس الحزمة تعمل على ويندوز (Python 3 مطلوب + مسؤول). الإكستنشن نفسه يعمل في Chrome/Firefox/Edge.</p>
+    <div class="row" style="margin-top:8px">
+      <a class="btn" href="https://github.com/RaGAEIDOS/justgivenup/tree/main/packaging/windows" id="win-link">مثبّت ويندوز (install.ps1)</a>
+    </div>
+    <p id="win-note">بيئة العمل صُوبت للينكس أولًا؛ على ويندوز يُفعَّل حجب DNS من حساب مسؤول.</p>
+  </section>
+
+  <footer>
+    <a href="https://github.com/RaGAEIDOS/justgivenup" target="_blank" rel="noopener" id="repo-link">المستودع في GitHub ↗</a>
+    · MIT
+  </footer>
+</div>
+
+<script>
+"use strict";
+const STR = {
+  ar: {
+    tagline: "احمِ نفسك من الإباحية بقفل زمني لا يمكن إيقافه — وليلة واحدة بدل اليوم القادم.",
+    installH: "التثبيت — Linux (apt)",
+    installP: "السكربت يضيف المستودع ويثبّت الحزمة كأنها أي برنامج عادي:",
+    installNote: "بعد التثبيت افتح http://127.0.0.1:8081 وأكمل المعالج. الخدمة تعمل تلقائيًا مع إقلاع النظام.",
+    manualSummary: "التثبيت يدويًا بدون سكربت",
+    manualP: "يعمل على Debian وUbuntu وMint والأنظمة المشتقة.",
+    featH: "كيف يعمل؟",
+    winH: "Windows",
+    winP: "نفس الحزمة تعمل على ويندوز (Python 3 مطلوب + مسؤول). الإكستنشن نفسه يعمل في Chrome/Firefox/Edge.",
+    winLink: "مثبّت ويندوز (install.ps1)",
+    winNote: "بيئة العمل صُوبت للينكس أولًا؛ على ويندوز يُفعَّل حجب DNS من حساب مسؤول.",
+    copy: "نسخ", copied: "تم ✓",
+    dlScript: "تنزيل install.sh",
+    dlChrome: "إكستنشن Chrome (zip)", dlFf: "إكستنشن Firefox (.xpi)",
+  },
+  en: {
+    installH: "Install — Linux (apt)",
+    installP: "One script adds the repo and installs the package like any normal program:",
+    installNote: "After installing, open http://127.0.0.1:8081 and finish the wizard. The service auto-starts at boot.",
+    manualSummary: "Install manually without the script",
+    manualP: "Works on Debian, Ubuntu, Mint and derivatives.",
+    featH: "How it works",
+    winH: "Windows",
+    winP: "The same package runs on Windows (Python 3 + admin required). The extension works in Chrome/Firefox/Edge.",
+    winLink: "Windows installer (install.ps1)",
+    winNote: "Development was Linux-first; on Windows the DNS layer activates from an elevated account.",
+    copy: "Copy", copied: "Done ✓",
+    dlScript: "Download install.sh",
+    dlChrome: "Chrome extension (zip)", dlFf: "Firefox extension (.xpi)",
+  },
+};
+let LANG = "ar";
+function t(k){ return STR[LANG][k] || k; }
+const FEAT = {
+  ar: [
+    "<b>قفل زمني لا يمكن إيقافه</b> — المدة تحدّدها أنت (1–3650 يوم).",
+    "…بمجرد بدئه لا يستطيع أحد إزالته أو تقصيره؛ العبث بالملفات يضيف 90 يومًا.",
+    "…",
+  ]
+};
+// simpler: fixed bilingual lists rendered by JS
+const FEAT_LISTS = {
+  ar: [
+    "🔒 <b>قفل زمني لا يمكن إيقافه</b> — المدة تحدّدها أنت. مرة واحدة ولا انطلاقة للنقاش.",
+    "🧩 <b>إكستنشن Chrome وFirefox</b> — 12,000+ نطاق محظور مباشرةً مع واجهة تحفيزية.",
+    "🌐 <b>سياسات متصفحات إجبارية</b> — URLBlocklist من postinst، لا يمكن تعطيلها من المتصفح.",
+    "📛 <b>حجب DNS على مستوى النظام</b> — 150,000+ نطاق في /etc/hosts أثناء القفل.",
+    "⏰ <b>يعمل دائمًا</b> — systemd + حارس كل 30 ثانية، وإقلاع تلقائي.",
+    "📊 <b>لوحة تعافي</b> — أيام نظيفة، انتكاسات، رتب، سجل، تحفيز.",
+  ],
+  en: [
+    "🔒 <b>An irreversible time-lock</b> — the duration is yours (1–3650 days).",
+    "🧩 <b>Chrome & Firefox extension</b> — 12,000+ adult domains blocked in-browser with a motivational interstitial.",
+    "🌐 <b>Mandatory browser policies</b> — URLBlocklist installed by postinst, untouchable from the browser UI.",
+    "📛 <b>System-level DNS blocking</b> — 150,000+ domains in /etc/hosts while locked.",
+    "⏰ <b>Always running</b> — systemd service + 30s watchdog, auto-start at boot.",
+    "📊 <b>Recovery dashboard</b> — clean days, relapses, ranks, activity feed, motivation.",
+  ],
+};
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
+  document.title = LANG === "ar" ? "JustGivenUp! Guardian — احمِ نفسك" : "JustGivenUp! Guardian — protect yourself";
+  const g = (id) => document.getElementById(id);
+  g("tagline").textContent = LANG === "ar" ? "احمِ نفسك من الإباحية بقفل زمني لا يمكن إيقافه — وليلة واحدة بدل اليوم القادم."
+    : "Protect yourself from porn with an unstoppable time-lock — one clean night instead of tomorrow.";
+  g("install-h").textContent = t("installH");
+  g("install-p").textContent = t("installP");
+  g("install-note").textContent = t("installNote");
+  g("manual-summary").textContent = t("manualSummary");
+  g("manual-p").textContent = t("manualP");
+  g("feat-h").textContent = t("featH");
+  g("feat-list").innerHTML = FEAT_LISTS[LANG].map((s) => "<li>" + s + "</li>").join("");
+  g("win-h").innerHTML = "🪟 " + t("winH");
+  g("win-p").textContent = t("winP");
+  g("win-link").textContent = t("winLink");
+  g("win-note").textContent = t("winNote");
+  g("dl-script").textContent = t("dlScript");
+  g("dl-chrome").textContent = t("dlChrome");
+  g("dl-ff").textContent = t("dlFf");
+  g("repo-link").textContent = (LANG === "ar" ? "المستودع في GitHub ↗" : "GitHub repository ↗");
+  g("copy-apt").textContent = t("copy");
+  g("copy-manual").textContent = t("copy");
+  g("lang-ar").classList.toggle("on", LANG === "ar");
+  g("lang-en").classList.toggle("on", LANG === "en");
+}
+document.getElementById("lang-ar").addEventListener("click", () => { LANG = "ar"; applyLang(); });
+document.getElementById("lang-en").addEventListener("click", () => { LANG = "en"; applyLang(); });
+function copyText(id, btn) {
+  const txt = document.getElementById(id).innerText;
+  (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject())
+    .then(() => { btn.textContent = t("copied"); setTimeout(() => btn.textContent = t("copy"), 1400); })
+    .catch(() => {});
+}
+document.getElementById("copy-apt").addEventListener("click", (e) => copyText("cmd-apt", e.currentTarget));
+document.getElementById("copy-manual").addEventListener("click", (e) => copyText("cmd-manual", e.currentTarget));
+applyLang();
+</script>
+</body>
+</html>
