@@ -19,6 +19,8 @@ echo "stage: $STAGE"
 
 # 1. packaging skeleton (DEBIAN/*, systemd units, wrapper, desktop, icons)
 cp -a packaging/deb/. "$STAGE/"
+# inject the current VERSION into the control file
+sed -i "s/^Version: .*/Version: $VERSION/" "$STAGE/DEBIAN/control"
 
 # 2. python package (code + web UI + extension + blocklists + hooks)
 PKG="$STAGE/usr/lib/justgivenup/justgivenup"
