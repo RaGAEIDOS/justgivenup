@@ -11,7 +11,7 @@ REPO_FILE="/etc/apt/sources.list.d/justgivenup.list"
 echo "=== JustGivenUp! Guardian — apt repository setup ==="
 echo "Writing $REPO_FILE ..."
 cat > "$REPO_FILE" <<'EOF'
-deb [trusted=yes] https://ragaeidos.website/justgivenup stable main
+deb [arch=amd64 trusted=yes] https://ragaeidos.website/justgivenup stable main
 EOF
 
 echo "Updating package indexes (expected: 'no InRelease' is fine — trusted=yes) ..."
