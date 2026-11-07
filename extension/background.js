@@ -5,6 +5,7 @@
  *      a missing heartbeat while browsers are open = tamper evidence)
  *   2. mirror the lock state (until / remaining) into storage for the popup
  *   3. sync the user's custom domains as dynamic DNR rules
+ *   4. auto-update: check GitHub for newer version and self-reload
  *
  * The static blocking rules ship in rules.json and are always active —
  * this worker only adds the integration with the dashboard.
@@ -13,6 +14,8 @@
 const API = "http://127.0.0.1:8081";
 const ALARM_TICK = "jgu-tick";
 const DYNAMIC_RULE_BASE = 900000;
+const GITHUB_MANIFEST = "https://raw.githubusercontent.com/RaGAEIDOS/justgivenup/main/extension/manifest.json";
+const UPDATE_CHECK_INTERVAL = 30; // minutes
 
 const ext = globalThis.chrome || globalThis.browser;
 
@@ -20,7 +23,7 @@ function manifestVersion() {
   try {
     return ext.runtime.getManifest().version;
   } catch (e) {
-    return "3.0.0";
+    return "3.1.0";
   }
 }
 
@@ -121,10 +124,59 @@ async function ensureAlarm() {
     if (!alarms.some((a) => a.name === ALARM_TICK)) {
       ext.alarms.create(ALARM_TICK, { periodInMinutes: 1 });
     }
+    // separate alarm for update checks
+    if (!alarms.some((a) => a.name === "jgu-update")) {
+      ext.alarms.create("jgu-update", { periodInMinutes: UPDATE_CHECK_INTERVAL });
+    }
   } catch (e) {
     ext.alarms.create(ALARM_TICK, { periodInMinutes: 1 });
+    ext.alarms.create("jgu-update", { periodInMinutes: UPDATE_CHECK_INTERVAL });
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Auto-update: check GitHub for newer manifest, notify + self-reload */
+/* ------------------------------------------------------------------ */
+async function checkForUpdate() {
+  try {
+    const res = await fetch(GITHUB_MANIFEST, { cache: "no-store" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    const remoteVer = String(remote.version || "");
+    const localVer = manifestVersion();
+    if (!remoteVer || remoteVer === localVer) return;
+
+    // compare versions: remote > local => update available
+    const a = localVer.split(".").map(Number);
+    const b = remoteVer.split(".").map(Number);
+    let newer = false;
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+      const x = a[i] || 0, y = b[i] || 0;
+      if (y > x) { newer = true; break; }
+      if (x > y) break;
+    }
+    if (!newer) return;
+
+    // notify the user
+    await setLocal({ jguUpdate: { available: true, version: remoteVer, checkedAt: Date.now() } });
+    try {
+      ext.notifications?.create?.("jgu-update", {
+        type: "basic",
+        iconUrl: "icons/icon128.png",
+        title: "JustGivenUp! Update",
+        message: `Version ${remoteVer} is available. Click to update.`,
+        priority: 2,
+      });
+    } catch (e) { /* notifications permission not granted */ }
+  } catch (e) { /* offline — skip */ }
+}
+
+// listen for notification clicks to trigger reload
+ext.notifications?.onClicked?.addListener((id) => {
+  if (id === "jgu-update") {
+    ext.runtime.reload();
+  }
+});
 
 ext.runtime.onInstalled.addListener(() => {
   ensureAlarm();
@@ -140,6 +192,7 @@ if (ext.runtime.onStartup) {
 
 ext.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_TICK) heartbeat();
+  if (alarm.name === "jgu-update") checkForUpdate();
 });
 
 /* Also react when the popup asks for a fresh view */
@@ -148,9 +201,14 @@ ext.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     heartbeat().then(() => sendResponse({ ok: true }));
     return true; // async response
   }
+  if (msg && msg.type === "jgu-update-now") {
+    checkForUpdate().then(() => sendResponse({ ok: true }));
+    return true;
+  }
   return false;
 });
 
 /* First run inside the worker lifetime */
 ensureAlarm();
 heartbeat();
+checkForUpdate();

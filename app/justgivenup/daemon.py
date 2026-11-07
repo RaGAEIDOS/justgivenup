@@ -182,10 +182,22 @@ def _watch_extension(ctx: AppContext) -> None:
         return
     browser_uptime = now - ctx.browser_seen_running_since
     silence = now - (ext["last_seen"] or 0)
-    if (browser_uptime >= EXTENSION_MISS_SECONDS
-            and silence >= EXTENSION_MISS_SECONDS
-            and ctx.lock.is_locked()):
-        ctx.lock.penalize("browser extension removed or disabled while locked")
+    if browser_uptime >= EXTENSION_MISS_SECONDS and silence >= EXTENSION_MISS_SECONDS:
+        if ctx.lock.is_locked():
+            # extension removed while locked => penalty
+            ctx.lock.penalize("browser extension removed or disabled while locked")
+        else:
+            # extension removed and no lock => auto-lock for 90 days
+            try:
+                ctx.lock.set_lock(90)
+                from . import stats
+                stats.record_event("lock_set", {
+                    "days": 90,
+                    "reason": "extension_removed_auto_lock",
+                })
+                log.warn("[DAEMON] Extension removed -> auto-lock for 90 days")
+            except Exception as exc:
+                log.error(f"[DAEMON] auto-lock failed: {exc}")
         cfg_ext = ctx.config.data.setdefault("extension", {})
         cfg_ext["miss_flag"] = True
         ctx.config.save()

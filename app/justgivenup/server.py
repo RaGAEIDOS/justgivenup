@@ -30,6 +30,26 @@ from .lock import LockActiveError
 
 CHANGELOG = [
     {
+        "version": "3.1.0",
+        "title_en": "Auto-update + extension removal auto-lock + Google unblocked",
+        "title_ar": "تحديث تلقائي + قفل تلقائي عند حذف الإضافة + فك حظر جوجل",
+        "changes_en": [
+            "Dashboard checks GitHub for new extension version and offers one-click update",
+            "Extension self-reloads when a newer version is detected",
+            "Auto-lock (90 days) if the browser extension is removed while running",
+            "Google and all legitimate sites removed from Chrome/Firefox enterprise policies",
+            "Version bumped to 3.1.0 across all components",
+        ],
+        "changes_ar": [
+            "الداشبورد يفحص GitHub بحثاً عن إصدار جديد من الإضافة ويعرض زر تحديث بنقرة واحدة",
+            "الإضافة تعيد تحميل نفسها تلقائياً عند اكتشاف إصدار أحدث",
+            "قفل تلقائي (90 يوماً) عند حذف الإضافة من المتصفح أثناء التشغيل",
+            "إزالة جوجل وكل المواقع الشرعية من سياسات Chrome/Firefox المؤسسية",
+            "تحديث الإصدار إلى 3.1.0 في جميع المكونات",
+        ],
+        "date": "2026-11-07",
+    },
+    {
         "version": "3.0.0",
         "title_en": "Total rebuild: extension + cross-platform daemon",
         "title_ar": "إعادة بناء كاملة: إكستنشن + خدمة عابرة للمنصات",
