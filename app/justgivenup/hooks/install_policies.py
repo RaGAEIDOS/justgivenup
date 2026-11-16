@@ -28,6 +28,12 @@ import shutil
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+try:  # shared-hosting suffixes (one-time cleanup of legacy whole-platform rules)
+    from justgivenup.blocklist import PRIVATE_SUFFIXES
+except Exception:  # pragma: no cover - hook must never fail to import
+    PRIVATE_SUFFIXES = set()
+
 CHROME_TARGETS = [
     ("google-chrome", "/etc/opt/chrome/policies/managed"),
     ("chromium", "/etc/chromium/policies/managed"),
@@ -88,6 +94,38 @@ def write_policy(path: Path, payload: dict) -> None:
     print(f"  wrote {path}")
 
 
+def _managed_sidecar(path: Path) -> Path:
+    return path.with_name(path.name + ".justgivenup-managed.json")
+
+
+def _load_managed(path: Path) -> list[str]:
+    """Patterns we added on the previous run (so stale ones can be removed)."""
+    try:
+        data = json.loads(_managed_sidecar(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [p for p in data if isinstance(p, str)] if isinstance(data, list) else []
+
+
+def _save_managed(path: Path, patterns: list[str]) -> None:
+    try:
+        _managed_sidecar(path).write_text(
+            json.dumps(sorted(set(patterns))), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def _legacy_platform_patterns() -> set[str]:
+    """Old builds collapsed *.vercel.app porn hosts into vercel.app and
+    blocked the whole platform.  Those base patterns must be dropped so
+    legitimate sites on shared hosting work again."""
+    out: set[str] = set()
+    for base in PRIVATE_SUFFIXES:
+        out.add(f"*://*.{base}/*")
+        out.add(f"*://{base}/*")
+    return out
+
+
 def merge_firefox_file(path: Path, domains: list[str]) -> None:
     """Merge our policies into an existing policies.json (idempotent)."""
     existing: dict = {}
@@ -99,12 +137,17 @@ def merge_firefox_file(path: Path, domains: list[str]) -> None:
     policies = existing.setdefault("policies", {})
     ours = firefox_policy(domains)
     blocklist = policies.setdefault("URLBlocklist", [])
+    # replace the patterns we manage instead of appending forever:
+    stale = set(_load_managed(path)) | _legacy_platform_patterns()
+    blocklist = [p for p in blocklist if p not in stale]
     for p in ours["URLBlocklist"]:
         if p not in blocklist:
             blocklist.append(p)
+    policies["URLBlocklist"] = blocklist
     policies["DNSOverHTTPS"] = ours["DNSOverHTTPS"]
     existing["policies"] = policies
     write_policy(path, existing)
+    _save_managed(path, ours["URLBlocklist"])
 
 
 def install(data_dir: Path) -> int:
@@ -145,9 +188,11 @@ def remove(data_dir: Path) -> int:
             continue
         policies = data.get("policies") or {}
         blocklist = policies.get("URLBlocklist") or []
-        # drop exactly the patterns we manage for our blocklist
+        # drop exactly the patterns we manage for our blocklist (plus any
+        # recorded from a previous install and legacy whole-platform rules)
         domains = load_core(data_dir) if data_dir else []
-        drop = set(url_patterns(domains))
+        drop = set(url_patterns(domains)) | set(_load_managed(path)) \
+            | _legacy_platform_patterns()
         new_blocklist = [p for p in blocklist if p not in drop]
         if len(new_blocklist) != len(blocklist):
             policies["URLBlocklist"] = new_blocklist
@@ -163,6 +208,7 @@ def remove(data_dir: Path) -> int:
         else:
             path.unlink(missing_ok=True)
             print(f"  removed {path}")
+        _managed_sidecar(path).unlink(missing_ok=True)
     return 0
 
 

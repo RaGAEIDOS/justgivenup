@@ -28,7 +28,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "app"))
 
-from justgivenup.blocklist import EXTRA_PROXY_DOMAINS  # noqa: E402
+from justgivenup.blocklist import EXTRA_PROXY_DOMAINS, PRIVATE_SUFFIXES  # noqa: E402
 
 SRC_URL = ("https://raw.githubusercontent.com/StevenBlack/hosts"
            "/master/alternates/porn/hosts")
@@ -63,6 +63,14 @@ MULTI_TLDS = {
     "eu.org",
 }
 
+# --- Shared hosting platforms (PSL "private" section) ---------------------
+# User content lives on subdomains of these platforms (e.g.
+# someone.vercel.app).  Collapsing an upstream porn subdomain to its base
+# (iporntoo.vercel.app -> vercel.app) would block the whole platform and
+# every legitimate site hosted on it.  Treat them like multi-level
+# suffixes instead: only the exact bad subdomains stay blocked.
+# (The canonical set lives in justgivenup.blocklist.PRIVATE_SUFFIXES.)
+
 # --- Legitimate sites that must NEVER be blocked (safety allowlist) ---
 # These are collapsed from subdomains in the upstream list (e.g.
 # www.google.com -> google.com) and would otherwise slip into core/full
@@ -95,6 +103,8 @@ LEGIT_DOMAINS = [
     "google.be", "google.com.vn", "amazon.co.jp", "amazon.de",
     "amazon.dev", "amazon.it", "apple.com.cn", "cnn.cm", "cnn.io",
     "github.io", "reddit.rest", "sony.jp",
+    # user-owned projects on shared hosting platforms
+    "etm-learning.vercel.app",
 ]
 
 # Popular domains we always want in the core tier (short names usually
@@ -169,9 +179,10 @@ def registrable(domain: str) -> str:
     parts = domain.split(".")
     if len(parts) <= 2:
         return domain
-    if ".".join(parts[-2:]) in MULTI_TLDS:
+    two = ".".join(parts[-2:])
+    if two in MULTI_TLDS or two in PRIVATE_SUFFIXES:
         return ".".join(parts[-3:])
-    return ".".join(parts[-2:])
+    return two
 
 
 def valid_domain(d: str) -> bool:

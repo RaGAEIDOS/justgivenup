@@ -1,6 +1,6 @@
 # JustGivenUp! core blocklist (policy + extension tier)
 # registrable domains, heuristic: first label <= 6 chars
-# domains: 12167
+# domains: 12177
 00000.uno
 00fun.com
 00go.com
@@ -66,6 +66,7 @@
 123unblock.com
 123unblock.pro
 12724.xyz
+12908.weebly.com
 12cams.be
 12hdem.com
 12jav.net
@@ -529,6 +530,7 @@
 6666.net
 666sex.net
 66av.cc
+679043.weebly.com
 690.co
 69er.de
 69net.de
@@ -644,6 +646,7 @@
 88gals.com
 89.com
 89.pl
+89003.weebly.com
 8boobs.com
 8chan.moe
 8etdb2.pics
@@ -1294,6 +1297,7 @@ anal4k.com
 anal4k.org
 analporn.com
 ananzi.co.za
+anaobs.wordpress.com
 anatic.net
 anatol.com
 anawe.cz
@@ -1313,6 +1317,7 @@ angela.nu
 anhcs.info
 anhvl.net
 anhx.net
+anian1.weebly.com
 anidex.info
 anifap.top
 anifre.com
@@ -3016,6 +3021,7 @@ dsdemo.jp
 dserv.ca
 dseuad.shop
 dseulm.shop
+dsfz.vercel.app
 dslady.com
 dsp.io
 dsp.vn
@@ -3559,6 +3565,7 @@ ffjav.com
 ffkk.me
 ffsbg.com
 fg60.com
+fghhiu.wordpress.com
 fgirl.ch
 fgl.com
 fhdpt.com
@@ -3572,6 +3579,7 @@ figato.fr
 fikfap.com
 fiksu.com
 file.al
+files.wordpress.com
 filf.com
 filihd.pl
 filis.pl
@@ -3635,7 +3643,6 @@ flux.com
 flx1.com
 flx10.com
 flxpxl.com
-fly.dev
 flyflv.club
 flyflv.com
 flyfuk.com
@@ -3699,8 +3706,6 @@ fpvids.com
 fqdmyn.com
 fqtag.com
 fr.st
-framer.app
-framer.website
 franko.info
 free-proxy.cz
 free.bg
@@ -4037,7 +4042,6 @@ girlss.me
 girlxx.net
 githb.co
 gitiho.com
-gitlab.io
 gits.net.th
 giulli.fr
 give.xxx
@@ -4917,6 +4921,7 @@ info.com
 info.home
 info.pl
 info7.mx
+infoee.gitlab.io
 inform.com
 infra.by
 infra.systems
@@ -4966,6 +4971,7 @@ ionos.de
 ionos.es
 ionos.fr
 iop.org
+ip-geo.appspot.com
 ip.ro
 ipf.cloud
 ipi9.fr
@@ -5976,6 +5982,7 @@ lrb.co.uk
 lsj.com
 lsl.com
 lsosad.com
+lssmag.github.io
 lsvn.vn
 ltd.uk
 ltk.pw
@@ -6746,6 +6753,7 @@ netyda.com
 nevale.info
 nevid.us
 nevyda.com
+new-sp.vercel.app
 new116.shop
 new161.shop
 new4.shop
@@ -6854,7 +6862,6 @@ novaon.asia
 novaon.vn
 novem.pl
 novids.com
-now.sh
 nowa.quest
 nowtv.com
 nowtv.it
@@ -7220,6 +7227,7 @@ oqari.shop
 oqdavi.shop
 oqvuro.shop
 oqzena.shop
+or-czc.pages.dev
 oralse.ca
 oralse.cx
 orangf.fr
@@ -7306,7 +7314,6 @@ pacrat.org
 padstm.com
 page-x.com
 page.link
-pages.dev
 pagoda.com
 paheal.net
 paifi.net
@@ -7549,6 +7556,7 @@ po88.cc
 pocofh.com
 pocomu.com
 pocoty.fr
+poczta.framer.website
 poebon.cc
 pof.com
 pogo.tv
@@ -8155,7 +8163,6 @@ r18.com
 r18.video
 r18hub.com
 r18lu.com
-r2.dev
 r2prod.com
 r34.app
 r34hub.com
@@ -8509,6 +8516,7 @@ sbokep.site
 sboob.com
 sbs-ad.com
 sbstck.com
+sbz.workers.dev
 scabee.com
 scap.pk
 scat.gold
@@ -8891,6 +8899,7 @@ short.gy
 shorte.st
 shorts.xxx
 shotas.co
+showgo.workers.dev
 showup.tv
 shpok.cc
 shpok.pro
@@ -9134,6 +9143,7 @@ squirt.photos
 squirt.porn
 sqxxx.com
 srbam.com
+srvcs.tumblr.com
 srvpub.com
 srwww1.com
 ss-01.com
@@ -9162,6 +9172,7 @@ stat24.com
 stati.bid
 stats.com
 stats.net
+stats.wordpress.com
 staxus.com
 staz.me
 stihil.com
@@ -9210,8 +9221,8 @@ sunporno.com
 sup.com
 supert.ag
 supjav.com
-surge.sh
 susi.live
+sutra.wordpress.com
 suunto.com
 suvaki.shop
 sv2.biz
@@ -9336,6 +9347,7 @@ tbmwa.org
 tbs.com
 tbue8.pro
 tbwt.com
+tc-bic.appspot.com
 tcads.net
 tcams.me
 tcams8.com
@@ -9750,7 +9762,6 @@ tukif.icu
 tukif.porn
 tula.su
 tumbex.com
-tumblr.com
 tumra.com
 tune.com
 tunebo.online
@@ -9964,6 +9975,7 @@ untd.com
 unthem.com
 uodoo.com
 uol.com.br
+up.railway.app
 upbbw.com
 upc.nl
 updo.nl
@@ -10110,7 +10122,6 @@ vepg.vn
 veporn.com
 veporn.net
 veporn.video
-vercel.app
 veruta.com
 very.mx
 veygo.com
@@ -10553,6 +10564,7 @@ wapka.cc
 wapka.co
 wapoz.info
 waps.cn
+wapsex.wordpress.com
 waptap.com
 wapx.cn
 warco.pl
@@ -10582,7 +10594,6 @@ wd9aml.casa
 wdfl.co
 wdm.com
 wdm29.com
-web.app
 web.de
 web.do
 web.id
@@ -10604,7 +10615,6 @@ webtj.net
 webuda.com
 wecima.webcam
 wedoo.com
-weebly.com
 weknow.ac
 wektor.buzz
 welmax.pl

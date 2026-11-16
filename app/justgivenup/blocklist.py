@@ -39,6 +39,22 @@ EXTRA_PROXY_DOMAINS = [
     "unblock-youtube.com", "proxflow.com", "proxad.net", "unblockweb.in",
 ]
 
+# Shared hosting platforms from the Public Suffix List "private" section.
+# User content lives on subdomains of these (someone.vercel.app); the
+# blocklist must never collapse an upstream porn subdomain to its base or
+# the whole platform (and every legitimate site on it) gets blocked.
+PRIVATE_SUFFIXES = {
+    "vercel.app", "now.sh", "netlify.app", "pages.dev", "workers.dev",
+    "web.app", "firebaseapp.com", "github.io", "gitlab.io", "bitbucket.io",
+    "surge.sh", "fly.dev", "r2.dev", "onrender.com", "herokuapp.com",
+    "glitch.me", "repl.co", "replit.app", "replit.dev", "deno.dev",
+    "railway.app", "weebly.com", "weeblysite.com", "wixsite.com",
+    "godaddysites.com", "blogspot.com", "wordpress.com", "tumblr.com",
+    "webflow.io", "framer.app", "framer.website", "bubbleapps.io",
+    "softr.app", "glide.page", "appspot.com", "azurewebsites.net",
+    "cloudfront.net", "notion.site", "carrd.co", "neocities.org",
+}
+
 _cache: dict[str, list[str]] = {}
 _cache_lock = threading.Lock()
 

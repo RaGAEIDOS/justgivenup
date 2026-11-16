@@ -30,6 +30,24 @@ from .lock import LockActiveError
 
 CHANGELOG = [
     {
+        "version": "3.1.1",
+        "title_en": "Shared-hosting fix: don't block whole platforms (vercel.app etc.)",
+        "title_ar": "إصلاح الاستضافات المشتركة: لا حظر للمنصات كاملة (vercel.app وغيرها)",
+        "changes_en": [
+            "Porn hosts on shared platforms (vercel.app, pages.dev, weebly.com, wordpress.com, tumblr.com...) are blocked individually instead of collapsing to — and blocking — the whole platform",
+            "Legitimate sites hosted on vercel.app and similar platforms (including etm-learning.vercel.app) are unblocked in Chrome/Firefox policies, the extension rules and /etc/hosts",
+            "Firefox policy updates now remove stale patterns from previous versions instead of only appending",
+            "Version bumped to 3.1.1 across all components",
+        ],
+        "changes_ar": [
+            "المواقع الإباحية على منصات الاستضافة المشتركة (vercel.app وpages.dev وweebly.com وwordpress.com وtumblr.com...) تُحجب فردياً بدل دمجها وحظر المنصة بأكملها",
+            "المواقع الشرعية المستضافة على vercel.app وما شابهها (ومنها etm-learning.vercel.app) أصبحت غير محجوبة في سياسات Chrome/Firefox وقواعد الإضافة و/etc/hosts",
+            "تحديث سياسة Firefox أصبح يحذف القواعد القديمة من الإصدارات السابقة بدل الإضافة عليها فقط",
+            "تحديث الإصدار إلى 3.1.1 في جميع المكونات",
+        ],
+        "date": "2026-11-16",
+    },
+    {
         "version": "3.1.0",
         "title_en": "Auto-update + extension removal auto-lock + Google unblocked",
         "title_ar": "تحديث تلقائي + قفل تلقائي عند حذف الإضافة + فك حظر جوجل",
