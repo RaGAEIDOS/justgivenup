@@ -1,0 +1,31 @@
+Architectures: amd64 all
+Codename: stable
+Components: main
+Date: Mon, 16 Nov 2026 11:21:09 +0000
+Label: JustGivenUp!
+Origin: JustGivenUp! Guardian
+Suite: stable
+MD5Sum:
+ 347204f988ebad453df2eebd41cc6b03              161 Release
+ 0a95bbe5461080d48d344e021b4f7bbb             1519 main/binary-all/Packages
+ 12741310bb337607362bda9d7b8c79c8              917 main/binary-all/Packages.gz
+ 0a95bbe5461080d48d344e021b4f7bbb             1519 main/binary-amd64/Packages
+ 12741310bb337607362bda9d7b8c79c8              917 main/binary-amd64/Packages.gz
+SHA1:
+ 2e89728dc7a131da44e76cd3d9c6b44b895d0a44              161 Release
+ 252a740d117c5c944408db13fb689e60d94f9042             1519 main/binary-all/Packages
+ 10b6b1c89e6c00c17ee74acb45317aab1fd67b71              917 main/binary-all/Packages.gz
+ 252a740d117c5c944408db13fb689e60d94f9042             1519 main/binary-amd64/Packages
+ 10b6b1c89e6c00c17ee74acb45317aab1fd67b71              917 main/binary-amd64/Packages.gz
+SHA256:
+ 4593ce2b611eb3a7013912cd223c8ae2902ceb239dc7302a4912963947d822e0              161 Release
+ 464afb486d727ea5a97da5124f774892f770dac107804caf3a253227dc73fd95             1519 main/binary-all/Packages
+ e3723cb31bd6d1bff6d00b2c51d5f72f5b1857144872de1830318bbaa580692d              917 main/binary-all/Packages.gz
+ 464afb486d727ea5a97da5124f774892f770dac107804caf3a253227dc73fd95             1519 main/binary-amd64/Packages
+ e3723cb31bd6d1bff6d00b2c51d5f72f5b1857144872de1830318bbaa580692d              917 main/binary-amd64/Packages.gz
+SHA512:
+ 3b984ec1c0508cd68f0f003ce3af3928ba1a34c5e023933007e3517cb3377ecd2ca988d4b9d9e63f5bef74456f30581749f5fd2dc2c97330d58e870a2ddd2f29              161 Release
+ b6a1347933520b36a1cd0c2512995deb5fadc8cae7ae6a187c849655d45e82b3e245d212e10e8fdae134d574274da08b69b0a24eb2cd9b37652a206a4b11a8bf             1519 main/binary-all/Packages
+ f625324bd066b772720596390600a9f982bb068b2626dd24dc3f52eabab72ec5d68b15ae107c13743d8e7323e7ec10bce2bb6edd2cc635850058184fceddac21              917 main/binary-all/Packages.gz
+ b6a1347933520b36a1cd0c2512995deb5fadc8cae7ae6a187c849655d45e82b3e245d212e10e8fdae134d574274da08b69b0a24eb2cd9b37652a206a4b11a8bf             1519 main/binary-amd64/Packages
+ f625324bd066b772720596390600a9f982bb068b2626dd24dc3f52eabab72ec5d68b15ae107c13743d8e7323e7ec10bce2bb6edd2cc635850058184fceddac21              917 main/binary-amd64/Packages.gz

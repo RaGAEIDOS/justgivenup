@@ -1,0 +1,31 @@
+Package: justgivenup
+Version: 3.1.1
+Architecture: all
+Maintainer: RaGAEIDOS <noreply+justgivenup@users.noreply.github.com>
+Depends: python3 (>= 3.9)
+Filename: pool/main/j/justgivenup/justgivenup_3.1.1_all.deb
+Size: 1172128
+MD5sum: 68e86c309cd9a778326c918af33f227f
+SHA1: 63f1b9071056a48c15cc19094b0ae0dcd8a90e13
+SHA256: c6e5839c61b98ee30441744517f650485dab38ed42618cfe63a7ce4ae63aaa83
+Section: utils
+Priority: optional
+Homepage: https://github.com/RaGAEIDOS/justgivenup
+Description: JustGivenUp! Guardian — porn blocker with an irreversible time-lock
+ The definitive porn blocker for Chrome, Firefox, Edge and Brave, paired
+ with a local dashboard that tracks your recovery streak and motivation.
+ .
+ * Browser extension (Manifest V3) with declarativeNetRequest rules that
+   redirect adult sites to a motivational interstitial.
+ * A sealed time-lock (HMAC) that, once set by the user for N days, cannot
+   be stopped, shortened or removed — tampering extends it by 90 days.
+ * System-wide DNS blocking via /etc/hosts while the lock is active.
+ * Enterprise browser policies (URLBlocklist) shipped with the package —
+   the block is enforced by the browser policy engine itself.
+ * systemd service + watchdog timer: starts at boot, restarts if killed.
+ * Web dashboard (Arabic + English): streaks, relapses, ranks, quotes.
+ .
+ Control flow:  port 8081 (127.0.0.1 only), open http://127.0.0.1:8081
+ Extension:     /usr/lib/justgivenup/justgivenup/extension
+ Website:       https://github.com/RaGAEIDOS/justgivenup
+
