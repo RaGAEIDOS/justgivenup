@@ -23,6 +23,7 @@ from pathlib import Path
 
 from . import VERSION, log
 from . import stats
+from . import browser_guard
 from .blocklist import full_domains
 from .context import AppContext
 from .server import DashboardServer
@@ -114,35 +115,9 @@ def _pid_alive(pid: int) -> bool:
 # Browser detection (for the extension heartbeat verdict)
 # ---------------------------------------------------------------------------
 
-_BROWSERS = ("chrome", "chromium", "firefox", "brave", "msedge", "edge", "opera",
-             "vivaldi", "opera_gx", "librewolf", "waterfox", "floorp", "tor")
-
-
 def _browsers_running() -> bool:
-    if os.name == "posix":
-        proc = Path("/proc")
-        if not proc.is_dir():
-            return False
-        try:
-            for comm in proc.glob("[0-9]*/comm"):
-                try:
-                    name = comm.read_text(encoding="utf-8", errors="replace").strip().lower()
-                except OSError:
-                    continue
-                for browser in _BROWSERS:
-                    if name.startswith(browser):
-                        return True
-        except OSError:
-            return False
-        return False
-    # Windows
     try:
-        import subprocess
-
-        out = subprocess.run(["tasklist", "/FO", "CSV", "/NH"],
-                             capture_output=True, text=True, timeout=10)
-        low = out.stdout.lower()
-        return any(b in low for b in _BROWSERS)
+        return browser_guard.browsers_running()
     except Exception:
         return False
 
@@ -166,42 +141,45 @@ def _reload_lock_if_changed(ctx: AppContext, cache: dict) -> None:
 
 
 def _watch_extension(ctx: AppContext) -> None:
+    """Extension removed while browsers are open => penalty (after 15 min).
+
+    The unprotected-browser time accumulator is maintained by
+    :func:`browser_guard.enforce`; it keeps counting across the 3-minute
+    browser closes, so removing the extension still ends in a penalty.
+    """
     ext = ctx.extension_info()
-    now = time.time()
-    if not ext["ever_seen"]:
+    if ext["connected"]:
+        ctx.extension_missing_accum = 0.0
         ctx.browser_seen_running_since = None
         return
-    if ext["connected"] or ext["miss_flag"]:
+    if not ext["ever_seen"] or ext["miss_flag"]:
         ctx.browser_seen_running_since = None
         return
     if not _browsers_running():
         ctx.browser_seen_running_since = None
         return
-    if ctx.browser_seen_running_since is None:
-        ctx.browser_seen_running_since = now
+    if ctx.extension_missing_accum < EXTENSION_MISS_SECONDS:
+        ctx.browser_seen_running_since = ctx.browser_seen_running_since or time.time()
         return
-    browser_uptime = now - ctx.browser_seen_running_since
-    silence = now - (ext["last_seen"] or 0)
-    if browser_uptime >= EXTENSION_MISS_SECONDS and silence >= EXTENSION_MISS_SECONDS:
-        if ctx.lock.is_locked():
-            # extension removed while locked => penalty
-            ctx.lock.penalize("browser extension removed or disabled while locked")
-        else:
-            # extension removed and no lock => auto-lock for 90 days
-            try:
-                ctx.lock.set_lock(90)
-                from . import stats
-                stats.record_event("lock_set", {
-                    "days": 90,
-                    "reason": "extension_removed_auto_lock",
-                })
-                log.warn("[DAEMON] Extension removed -> auto-lock for 90 days")
-            except Exception as exc:
-                log.error(f"[DAEMON] auto-lock failed: {exc}")
-        cfg_ext = ctx.config.data.setdefault("extension", {})
-        cfg_ext["miss_flag"] = True
-        ctx.config.save()
-        ctx.browser_seen_running_since = now
+    if ctx.lock.is_locked():
+        # extension removed while locked => penalty
+        ctx.lock.penalize("browser extension removed or disabled while locked")
+    else:
+        # extension removed and no lock => auto-lock for 90 days
+        try:
+            ctx.lock.set_lock(90)
+            stats.record_event("lock_set", {
+                "days": 90,
+                "reason": "extension_removed_auto_lock",
+            })
+            log.warn("[DAEMON] Extension removed -> auto-lock for 90 days")
+        except Exception as exc:
+            log.error(f"[DAEMON] auto-lock failed: {exc}")
+    cfg_ext = ctx.config.data.setdefault("extension", {})
+    cfg_ext["miss_flag"] = True
+    ctx.config.save()
+    ctx.extension_missing_accum = 0.0
+    ctx.browser_seen_running_since = time.time()
 
 
 def cycle(ctx: AppContext, lock_cache: dict, tick: int) -> None:
@@ -217,7 +195,10 @@ def cycle(ctx: AppContext, lock_cache: dict, tick: int) -> None:
         # when there is no block the call is just a cheap no-op read
         ctx.enforcer.apply([], force=True)
 
+    browser_guard.maintain(ctx)
+
     _watch_extension(ctx)
+    browser_guard.enforce(ctx)
 
     if tick % 4 == 0:  # once a minute
         stats.instance().refresh_streak()
@@ -272,6 +253,7 @@ def run(port: int | None = None) -> int:
         ctx.enforcer.apply(full_domains(), force=True)
 
     _running.set()
+    browser_guard.start_watcher(ctx, _running)
     tick = 0
     try:
         while _running.is_set():

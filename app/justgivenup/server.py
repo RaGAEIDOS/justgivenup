@@ -26,9 +26,32 @@ from . import motivation, stats
 from .blocklist import core_domains, full_domains, summary as blocklist_summary
 from .config import extension_dir, web_root
 from .context import AppContext
+from .browser_guard import brand_for_label, engine_for_brand
 from .lock import LockActiveError
 
 CHANGELOG = [
+    {
+        "version": "3.2.0",
+        "title_en": "Incognito guard + 3-minute extension requirement + VPN extension blocking",
+        "title_ar": "حماية التصفح المخفي + إلزام الإضافة خلال 3 دقائق + حظر إضافات VPN",
+        "changes_en": [
+            "Any browser open without the extension for 3 minutes is closed automatically (tracked per browser family)",
+            "Incognito/private mode is disabled by policy whenever the extension has not proved it is allowed there; launched incognito/private windows and --incognito/-private-window launches are closed immediately",
+            "The extension is automatically granted 'Allow in incognito' when the browser is closed (Preferences patch)",
+            "All VPN/proxy extensions are blocked in Chromium browsers through the generic 'proxy' permission policy plus a dynamically scanned ID list",
+            "Firefox VPN/proxy add-ons are blocked through enterprise policy and the extension's management API (when permitted)",
+            "Version bumped to 3.2.0 across all components",
+        ],
+        "changes_ar": [
+            "أي متصفح يبقى مفتوحاً دون الإضافة لمدة 3 دقائق يُغلق تلقائياً (مع تتبع كل محرك متصفح على حدة)",
+            "التصفح المخفي/الخاص يُعطَّل بالسياسة كلما لم تُثبت الإضافة أنها مسموحة هناك، وتُغلق نوافذ Incognito/Private فور اكتشافها أو عند التشغيل بـ --incognito/-private-window",
+            "تُمنح الإضافة صلاحية 'السماح في التصفح المخفي' تلقائياً عند إغلاق المتصفح (تعديل Preferences)",
+            "حظر جميع إضافات VPN/Proxy في متصفحات Chromium عبر سياسة صلاحية proxy العامة وقائمة IDs تُفحص ديناميكياً",
+            "حظر إضافات VPN/Proxy في Firefox عبر السياسة المؤسسية وواجهة management في الإضافة (عند السماح بها)",
+            "تحديث الإصدار إلى 3.2.0 في جميع المكونات",
+        ],
+        "date": "2026-11-17",
+    },
     {
         "version": "3.1.1",
         "title_en": "Shared-hosting fix: don't block whole platforms (vercel.app etc.)",
@@ -415,11 +438,65 @@ class Handler(BaseHTTPRequestHandler):
     def _post_heartbeat(self, body: dict) -> None:
         cfg = self.ctx.config
         ext = cfg.data.setdefault("extension", {})
-        ext["last_seen"] = time.time()
+        now = time.time()
+        browser = str(body.get("browser") or "")[:40]
+        ext["last_seen"] = now
         ext["ever_seen"] = True
         ext["version"] = str(body.get("version") or "")[:20]
-        ext["browser"] = str(body.get("browser") or "")[:40]
+        ext["browser"] = browser
         ext["miss_flag"] = False
+
+        if "incognito_access" in body:
+            ext["incognito_access"] = bool(body.get("incognito_access"))
+        if "incognito_context" in body:
+            ext["incognito_context"] = bool(body.get("incognito_context"))
+            if ext["incognito_context"]:
+                ext["incognito_context_at"] = now
+        try:
+            windows = max(0, min(500, int(body.get("incognito_windows") or 0)))
+        except (TypeError, ValueError):
+            windows = 0
+        ext["incognito_windows"] = windows
+        if windows:
+            ext["incognito_seen_at"] = now
+        try:
+            vpn_blocked = max(0, min(1000, int(body.get("vpn_blocked") or 0)))
+        except (TypeError, ValueError):
+            vpn_blocked = 0
+        ext["vpn_blocked"] = vpn_blocked
+        if vpn_blocked:
+            ext["vpn_blocked_at"] = now
+
+        fallback_brand = brand_for_label(browser)
+        brand = str(body.get("brand") or "").strip().lower()[:20]
+        if brand in {"", "unknown", "other"}:
+            brand = fallback_brand
+        browsers = ext.get("browsers")
+        if not isinstance(browsers, dict):
+            browsers = {}
+            ext["browsers"] = browsers
+        rec = browsers.get(brand)
+        if not isinstance(rec, dict):
+            rec = {}
+            browsers[brand] = rec
+        rec["brand"] = brand
+        rec["engine"] = engine_for_brand(brand)
+        rec["last_seen"] = now
+        rec["browser"] = browser
+        rec["version"] = ext["version"]
+        if "incognito_access" in body:
+            rec["incognito_access"] = bool(body.get("incognito_access"))
+        if "incognito_context" in body:
+            rec["incognito_context"] = bool(body.get("incognito_context"))
+            if rec["incognito_context"]:
+                rec["incognito_context_at"] = now
+        rec["incognito_windows"] = windows
+        if windows:
+            rec["incognito_seen_at"] = now
+        rec["vpn_blocked"] = vpn_blocked
+        if vpn_blocked:
+            rec["vpn_blocked_at"] = now
+
         cfg.save()
         self._json({"ok": True,
                     "locked": self.ctx.lock.is_locked(),
@@ -478,6 +555,7 @@ class Handler(BaseHTTPRequestHandler):
             "ranks": stats.instance().ranks_payload(),
             "settings": ctx.settings_payload(),
             "extension": ctx.extension_info(),
+            "guard": dict(ctx.guard_state),
             "hosts": ctx.enforcer.status(),
             "motivation": motivation.payload(ctx.config.language),
             "events": stats.recent_events(60),

@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
   "name": "JustGivenUp! Guardian",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "Blocks adult sites with an irreversible time-lock and keeps your recovery streak in sync with the local dashboard. يحجب المواقع الإباحية بقفل زمني لا يمكن إيقافه.",
   "permissions": [
     "declarativeNetRequest",
     "storage",
     "alarms",
-    "notifications"
+    "notifications",
+    "management"
   ],
   "host_permissions": [
     "<all_urls>",
@@ -15,7 +16,9 @@
     "http://localhost:8081/*"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "action": {
     "default_popup": "popup.html",

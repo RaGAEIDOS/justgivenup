@@ -49,6 +49,11 @@ const STR = {
     applied: "تم التطبيق ✓",
     extTitle: "الإكستنشن",
     extConnected: "متصل", extNever: "لم يتصل بعد", extStale: "آخر اتصال",
+    guardIncognito: "التصفح المخفي",
+    guardAllowed: "مسموح ومحمي", guardBlocked: "محظور (الإضافة غير مثبتة هناك)",
+    guardVpn: "إضافات VPN محظورة",
+    guardAutoClose: "إغلاق تلقائي بعد 3 دقائق بدون الإضافة",
+    guardLastKill: "آخر إغلاق قسري",
     extHint: "لتحميل الإكستنشن: chrome://extensions ← Developer mode ← Load unpacked ← واختر مجلد الإكستنشن. في Firefox: about:addons ← Install Add-on From File ← ملف XPI.",
     extCopy: "نسخ مسار الإكستنشن",
     blockTitle: "نطاقات إضافية",
@@ -64,6 +69,8 @@ const STR = {
       lock_created: "قفل جديد", lock_expired: "انتهى القفل",
       tamper: "عبث مؤكد", unlock_refused: "محاولة فك مرفوضة",
       block: "أباحية محظورة", relapse: "انتكاسة",
+      browser_guard_kill: "إغلاق متصفح", extension_required_kill: "إغلاق: الإضافة غير مثبتة",
+      incognito_blocked: "منع تصفح مخفي",
     },
   },
   en: {
@@ -105,6 +112,11 @@ const STR = {
     applied: "Applied ✓",
     extTitle: "Extension",
     extConnected: "connected", extNever: "not connected yet", extStale: "last seen",
+    guardIncognito: "Incognito",
+    guardAllowed: "allowed & protected", guardBlocked: "blocked (extension missing there)",
+    guardVpn: "VPN extensions blocked",
+    guardAutoClose: "auto-close after 3 min without the extension",
+    guardLastKill: "last forced close",
     extHint: "To install: chrome://extensions → Developer mode → Load unpacked → choose the extension folder. On Firefox: about:addons → Install Add-on From File → the XPI file.",
     extCopy: "Copy extension path",
     blockTitle: "Custom domains",
@@ -120,6 +132,8 @@ const STR = {
       lock_created: "lock created", lock_expired: "lock expired",
       tamper: "tamper detected", unlock_refused: "unlock refused",
       block: "porn blocked", relapse: "relapse logged",
+      browser_guard_kill: "browser closed", extension_required_kill: "closed: extension missing",
+      incognito_blocked: "incognito blocked",
     },
   },
 };
@@ -350,6 +364,29 @@ function renderStatus() {
       ? "🟡 " + t("extStale") + " " + (ext.age_seconds ?? "?") + "s"
       : "⚪ " + t("extNever");
   $("ext-copy").dataset.path = (S.extension || {}).dir || "";
+
+  // browser guard (incognito / VPN / 3-minute rule)
+  const guard = S.guard || {};
+  const inc = guard.incognito_allowed || {};
+  const brandLabels = {
+    chrome: "Chrome", chromium: "Chromium", edge: "Edge", brave: "Brave",
+    opera: "Opera", vivaldi: "Vivaldi", firefox: "Firefox",
+    librewolf: "LibreWolf", waterfox: "Waterfox", floorp: "Floorp", tor: "Tor",
+  };
+  const gparts = [];
+  const incParts = Object.entries(inc)
+    .filter(([brand]) => brandLabels[brand])
+    .map(([brand, allowed]) => brandLabels[brand] + " " + (allowed ? "✅" : "🚫"));
+  gparts.push(t("guardIncognito") + ": " +
+    (incParts.length ? incParts.join(" · ") : "—"));
+  gparts.push(t("guardVpn") + ": " + (ext.vpn_blocked || 0));
+  gparts.push(t("guardAutoClose"));
+  if (guard.last_kill_at) {
+    const when = new Date(guard.last_kill_at * 1000).toLocaleString(LANG === "ar" ? "ar" : "en");
+    gparts.push(t("guardLastKill") + ": " + when +
+      (guard.last_kill_reason ? " (" + escapeHtml(guard.last_kill_reason) + ")" : ""));
+  }
+  $("guard-state").textContent = gparts.join(" · ");
 
   // custom domains
   const cl = $("custom-list");

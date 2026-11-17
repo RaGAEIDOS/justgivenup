@@ -33,6 +33,10 @@ try:  # shared-hosting suffixes (one-time cleanup of legacy whole-platform rules
     from justgivenup.blocklist import PRIVATE_SUFFIXES
 except Exception:  # pragma: no cover - hook must never fail to import
     PRIVATE_SUFFIXES = set()
+try:  # VPN / proxy extension policies + shared target lists
+    from justgivenup import vpnblock
+except Exception:  # pragma: no cover
+    vpnblock = None
 
 CHROME_TARGETS = [
     ("google-chrome", "/etc/opt/chrome/policies/managed"),
@@ -83,6 +87,9 @@ def firefox_policy(domains: list[str]) -> dict:
     return {
         "URLBlocklist": url_patterns(domains),
         "DNSOverHTTPS": {"Enabled": False, "Locked": True},
+        # Private browsing is only re-enabled by the daemon once the
+        # extension proves that it runs in private windows.
+        "PrivateBrowsingModeAvailability": 1,
     }
 
 
@@ -145,6 +152,8 @@ def merge_firefox_file(path: Path, domains: list[str]) -> None:
             blocklist.append(p)
     policies["URLBlocklist"] = blocklist
     policies["DNSOverHTTPS"] = ours["DNSOverHTTPS"]
+    if "PrivateBrowsingModeAvailability" not in policies:
+        policies["PrivateBrowsingModeAvailability"] = ours["PrivateBrowsingModeAvailability"]
     existing["policies"] = policies
     write_policy(path, existing)
     _save_managed(path, ours["URLBlocklist"])
@@ -154,12 +163,23 @@ def install(data_dir: Path) -> int:
     domains = load_core(data_dir)
     print(f"core domains: {len(domains)} -> {len(url_patterns(domains))} patterns")
 
+    chrome_dirs: list[Path] = []
     for binary, directory in CHROME_TARGETS:
         if not which(binary):
             continue
         target = Path(directory) / "justgivenup.json"
         print(f"{binary}: {target}")
         write_policy(target, chrome_policy(domains))
+        chrome_dirs.append(Path(directory))
+        # Incognito stays disabled until the extension reports that it is
+        # allowed in incognito; the daemon flips this to 0 dynamically.
+        write_policy(Path(directory) / "justgivenup-incognito.json",
+                     {"IncognitoModeAvailability": 1})
+
+    if vpnblock is not None:
+        if chrome_dirs:
+            vpnblock.apply_chrome_extension_policy(chrome_dirs, set())
+            print(f"  wrote VPN extension policy in {len(chrome_dirs)} Chrome target(s)")
 
     existing_firefox = [p for p in FIREFOX_CANDIDATES if p.is_file()]
     if not existing_firefox and (which("firefox") or which("firefox-esr")):
@@ -167,6 +187,9 @@ def install(data_dir: Path) -> int:
     for path in existing_firefox:
         print(f"firefox: {path}")
         merge_firefox_file(path, domains)
+    if vpnblock is not None and existing_firefox:
+        vpnblock.apply_firefox_extension_policy(set())
+        print(f"  wrote VPN add-on policy in {len(existing_firefox)} Firefox target(s)")
 
     if not any(which(b) for b, _ in CHROME_TARGETS) and not existing_firefox:
         print("no supported browser detected; nothing installed")
@@ -175,10 +198,15 @@ def install(data_dir: Path) -> int:
 
 def remove(data_dir: Path) -> int:
     for _, directory in CHROME_TARGETS:
-        path = Path(directory) / "justgivenup.json"
-        if path.is_file():
-            path.unlink()
-            print(f"  removed {path}")
+        base = Path(directory)
+        for name in ("justgivenup.json", "justgivenup-extensions.json",
+                     "justgivenup-incognito.json"):
+            path = base / name
+            if path.is_file():
+                path.unlink()
+                print(f"  removed {path}")
+    if vpnblock is not None:
+        vpnblock.remove_firefox_extension_policy()
     for path in FIREFOX_CANDIDATES:
         if not path.is_file():
             continue
@@ -199,6 +227,8 @@ def remove(data_dir: Path) -> int:
             print(f"  cleaned URLBlocklist in {path}")
         if policies.get("DNSOverHTTPS") == {"Enabled": False, "Locked": True}:
             policies.pop("DNSOverHTTPS", None)
+        if policies.get("PrivateBrowsingModeAvailability") in (0, 1):
+            policies.pop("PrivateBrowsingModeAvailability", None)
         if policies:
             data["policies"] = policies
         else:

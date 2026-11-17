@@ -10,7 +10,7 @@ systemd watchdog and the deb package's removal guard) they make the
 lock effectively unbreakable for its whole duration.
 """
 
-VERSION = "3.1.1"
+VERSION = "3.2.0"
 APP_NAME = "JustGivenUp"
 APP_SLUG = "justgivenup"
 DASHBOARD_PORT = 8081

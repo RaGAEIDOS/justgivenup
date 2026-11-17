@@ -154,7 +154,21 @@ DEFAULT_CONFIG = {
     "app_version": VERSION,
     "profile": {"name": "", "goal": ""},
     "custom_domains": [],       # extra domains the user adds to the blocklist
-    "extension": {"last_seen": 0.0, "version": "", "browser": "", "ever_seen": False},
+    "extension": {
+        "last_seen": 0.0,
+        "version": "",
+        "browser": "",
+        "ever_seen": False,
+        "miss_flag": False,
+        "incognito_access": None,
+        "incognito_context": False,
+        "incognito_context_at": 0.0,
+        "incognito_windows": 0,
+        "incognito_seen_at": 0.0,
+        "vpn_blocked": 0,
+        "vpn_blocked_at": 0.0,
+        "browsers": {},
+    },
 }
 
 
